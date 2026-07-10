@@ -147,7 +147,7 @@
   <p class="credit">
     気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
     潮汐データ：<a href="https://tide736.net/" target="_blank" rel="noopener">tide736.net</a>（気象庁 潮位表をもとに算出）<br>
-    <span style="opacity:.7">版 2026-07-10 v4（時間帯別100点・14魚種）</span>
+    <span style="opacity:.7">版 2026-07-10 v5（24時間別100点・14魚種）</span>
   </p>
 </div>
 
@@ -395,6 +395,13 @@ function buildEnv(data, dayOffset){
     const ebb=(c.edd||[]).map(x=>({time:x.time,cm:+x.cm}));
     const extremes=[...flood.map(x=>({t:hm2dec(x.time.slice(0,5)),cm:x.cm})),
                     ...ebb.map(x=>({t:hm2dec(x.time.slice(0,5)),cm:x.cm}))].sort((p,q)=>p.t-q.t);
+    // 24時間表示用：前日の最終・翌日最初の満干を境界として補い、深夜の潮の動きも正しく出す
+    const chart=tide.tide.chart, keys=Object.keys(chart).sort(), di2=keys.indexOf(dateStr);
+    const exList=(ds,off)=>{ const cc=chart[ds]; return cc?[...(cc.flood||[]),...(cc.edd||[])]
+      .map(x=>({t:hm2dec(x.time.slice(0,5))+off,cm:+x.cm})).sort((a,b)=>a.t-b.t):[]; };
+    if(di2>0){ const pv=exList(keys[di2-1],-24); if(pv.length) extremes.push(pv[pv.length-1]); }
+    if(di2>=0&&di2<keys.length-1){ const nx=exList(keys[di2+1],24); if(nx.length) extremes.push(nx[0]); }
+    extremes.sort((p,q)=>p.t-q.t);
     let hiCm=-1e9, loCm=1e9;
     flood.forEach(x=>hiCm=Math.max(hiCm,x.cm)); ebb.forEach(x=>loCm=Math.min(loCm,x.cm));
     const range = (hiCm>-1e9&&loCm<1e9)? hiCm-loCm : null;
@@ -458,10 +465,9 @@ function scoreSpecies(env, sp){
   const typeS=sp.tideType[type];
   const ex=env.tideDay?env.tideDay.extremes:[];
   const sr=env.sunrise, ss=env.sunset;
-  const start=Math.max(3,Math.floor(sr-1)), end=Math.min(21,Math.ceil(ss+1));
 
   const hourly=[]; let peak=null;
-  for(let h=start; h<=end; h++){
+  for(let h=0; h<=23; h++){
     const move=movingAt(h, ex);
     const tideF = typeS*0.5 + move*0.5;            // 潮回りの良さ×その時間の潮の動き
     const timeF = timeFactorAt(h, sr, ss, sp);
@@ -545,7 +551,7 @@ function renderHours(r){
     const isPeak=(c===r.peak)?' peak':'';
     return `<div class="hcell ${cls}${isPeak}"><span class="hh">${c.h}時</span><span class="hs">${pct}</span></div>`;
   }).join('');
-  return `<p class="hours-cap">🕒 時間帯別の釣れそう度（100点満点・行ける時間で選ぼう →横スクロール）</p>
+  return `<p class="hours-cap">🕒 時間帯別の釣れそう度（0〜23時・100点満点・行ける時間で選ぼう →横スクロール）</p>
     <div class="hours-wrap"><div class="hours">${cells}</div></div>`;
 }
 function renderFish(r){
