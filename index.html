@@ -103,6 +103,14 @@
   .hcell.C{background:var(--c-bg)} .hcell.C .hs{color:#b8820a}
   .hcell.D{background:var(--d-bg)} .hcell.D .hs{color:var(--d)}
   .hcell.peak{border-color:var(--accent)}
+  .personal{font-size:11.5px;color:var(--ink);margin-top:9px;line-height:1.5;
+    background:#eef6ff;border:1px solid #d6e8fb;border-radius:9px;padding:7px 10px}
+  .personal b{color:var(--sea)}
+  .personal .band{color:var(--muted);font-size:11px}
+  .logbanner{font-size:12px;color:var(--ink);line-height:1.6;
+    background:#eef6ff;border:1px solid #d6e8fb;border-radius:12px;padding:11px 13px;margin-bottom:14px}
+  .logbanner b{color:var(--sea)}
+  .logbanner a{color:var(--sea);font-weight:700;text-decoration:none}
   .tips{font-size:11.5px;color:var(--muted);margin-top:11px;line-height:1.5;background:var(--bg);border-radius:9px;padding:8px 10px}
 
   .tide-row{padding:12px 15px;background:var(--card);border:1px solid var(--line);border-radius:16px;font-size:13px;margin-bottom:14px}
@@ -147,7 +155,7 @@
   <p class="credit">
     気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
     潮汐データ：<a href="https://tide736.net/" target="_blank" rel="noopener">tide736.net</a>（気象庁 潮位表をもとに算出）<br>
-    <span style="opacity:.7">版 2026-07-10 v5（24時間別100点・14魚種）</span>
+    <span style="opacity:.7">版 2026-07-10 v6（釣行ログ連携・14魚種）</span>
   </p>
 </div>
 
@@ -481,6 +489,59 @@ function scoreSpecies(env, sp){
     f:{temp:tS,season:seaS,tide:peak.tideF,time:peak.timeF,weather:wS,type}, env};
 }
 function gradeCls(pct){ return pct>=75?'A':pct>=58?'B':pct>=42?'C':'D'; }
+
+//=================== 釣行ログ連携（あなたの実績） ===================
+// 釣行ログ(kayak-fishing-log)と同一オリジンなので localStorage を共有できる
+const TRIPS_KEY = 'kayak-fishing-trips';
+// 予報の魚種ID → 釣行ログで使われそうな魚種名・地方名（部分一致でヒット扱い）
+const LOG_ALIASES = {
+  aori:['アオリ'],
+  buri:['ブリ','ワラサ','ハマチ','イナダ','ツバス','フクラギ','ガンド','コズクラ','メジロ','ヒラマサ','サワラ','サゴシ','青物'],
+  hata:['キジハタ','アコウ','カサゴ','ガシラ','アラカブ','ソイ','アイナメ','根魚','ロック'],
+  flat:['ヒラメ','マゴチ','コチ','座布団'],
+  aji:['アジ','マアジ'],
+  kisu:['キス','シロギス'],
+  tachi:['タチウオ','太刀魚','タチ'],
+  madai:['マダイ','真鯛','チャリコ'],
+  suzuki:['スズキ','シーバス','セイゴ','フッコ','ハネ'],
+  chinu:['クロダイ','黒鯛','チヌ','カイズ'],
+  kamasu:['カマス'],
+  mebaru:['メバル'],
+  kawahagi:['カワハギ','ウマヅラ','ハゲ'],
+  maika:['マイカ','ケンサキ','剣先','シロイカ','アカイカ']
+};
+let TRIPS = [];
+function readTrips(){
+  try{
+    const raw=localStorage.getItem(TRIPS_KEY); if(!raw) return [];
+    let d=JSON.parse(raw);
+    if(d && !Array.isArray(d) && Array.isArray(d.value)) d=d.value;   // 念のため包装形式にも対応
+    return Array.isArray(d)?d:[];
+  }catch(e){ return []; }
+}
+function parseTemp(s){ const m=String(s==null?'':s).match(/-?\d+(\.\d+)?/); return m?parseFloat(m[0]):null; }
+function tripCaught(trip, id){
+  const al=LOG_ALIASES[id]||[];
+  return (trip.catches||[]).some(c=>{
+    const nm=((c&&c.species)||'').trim();
+    if(!nm) return false;
+    return al.some(a=> nm.includes(a) || a.includes(nm));
+  });
+}
+function personalStats(sp, todaySst){
+  let total=0, hits=0, bandTotal=0, bandHits=0;
+  for(const t of TRIPS){
+    if(!t || !t.date) continue;
+    total++;
+    const caught=tripCaught(t, sp.id);
+    if(caught) hits++;
+    if(todaySst!=null){
+      const wt=parseTemp(t.waterTemp);
+      if(wt!=null && Math.abs(wt-todaySst)<=2.5){ bandTotal++; if(caught) bandHits++; }
+    }
+  }
+  return {total,hits,bandTotal,bandHits};
+}
 function grade(score){
   if(score>=.75) return {k:'A',mk:'◎',label:'超狙い目'};
   if(score>=.58) return {k:'B',mk:'○',label:'チャンスあり'};
@@ -554,6 +615,16 @@ function renderHours(r){
   return `<p class="hours-cap">🕒 時間帯別の釣れそう度（0〜23時・100点満点・行ける時間で選ぼう →横スクロール）</p>
     <div class="hours-wrap"><div class="hours">${cells}</div></div>`;
 }
+function renderPersonal(r){
+  if(!TRIPS.length) return '';
+  const st=personalStats(r.sp, r.env.sstAvg);
+  const rate = st.total? Math.round(st.hits/st.total*100) : 0;
+  let s=`📓 あなたの実績：<b>${st.total}回中${st.hits}回</b>ヒット（${rate}%）`;
+  if(st.bandTotal>=1 && r.env.sstAvg!=null){
+    s+=`<br><span class="band">水温${Math.round(r.env.sstAvg)}℃前後の日：${st.bandTotal}回中${st.bandHits}回</span>`;
+  }
+  return `<div class="personal">${s}</div>`;
+}
 function renderFish(r){
   const g=grade(r.score);
   const pct=Math.round(clamp(r.score,0,1)*100);
@@ -570,6 +641,7 @@ function renderFish(r){
       <div class="reason">${reasonText(r)}</div>
       ${renderHours(r)}
       <div class="factors">${factorChips(r)}</div>
+      ${renderPersonal(r)}
       <div class="tips">💡 ${escapeHtml(r.sp.tips)}</div>
     </div>
   </div>`;
@@ -583,9 +655,12 @@ function renderTide(env){
 }
 function renderDay(off){
   if(!DATA) return;
+  TRIPS = readTrips();
   const env=buildEnv(DATA, off);
   const results=SPECIES.map(sp=>scoreSpecies(env,sp)).sort((a,b)=>b.score-a.score);
-  const html = renderEnv(env) + results.map(renderFish).join('') + renderTide(env);
+  const banner = TRIPS.length ? '' :
+    `<div class="logbanner">📓 <b>釣行ログ</b>に釣行を記録すると、ここに「あなたの実績（この魚が何回中何回釣れたか）」が出て、判定の答え合わせができます。<br><a href="../kayak-fishing-log/">釣行ログを開く →</a></div>`;
+  const html = renderEnv(env) + banner + results.map(renderFish).join('') + renderTide(env);
   document.getElementById('content').innerHTML=html;
 }
 
