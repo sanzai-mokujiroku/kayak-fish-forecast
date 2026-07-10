@@ -147,7 +147,7 @@
   <p class="credit">
     気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
     潮汐データ：<a href="https://tide736.net/" target="_blank" rel="noopener">tide736.net</a>（気象庁 潮位表をもとに算出）<br>
-    <span style="opacity:.7">版 2026-07-10 v3（時間帯別100点・6魚種）</span>
+    <span style="opacity:.7">版 2026-07-10 v4（時間帯別100点・14魚種）</span>
   </p>
 </div>
 
@@ -182,13 +182,13 @@ const SPECIES = [
     weight:{temp:.38, season:.24, tide:.18, time:.14, weather:.06},
     tips:'澄んだ潮＆朝夕マズメが鍵。春は大型の親イカ、秋は数釣りの新子。'
   },
-  { id:'buri', name:'青物（ブリ・ハマチ）', emoji:'🐟',
+  { id:'buri', name:'青物', emoji:'🐟',
     temp:{ideal:[15,21], ok:[12,25]},
     season:{1:.3,2:.2,3:.3,4:.5,5:.6,6:.6,7:.5,8:.5,9:.8,10:1,11:1,12:.7},
     tideType:{big:1, mid:.8, small:.4}, clarity:'any',
     time:{morning:1, day:.4, evening:.7, night:.3},
     weight:{temp:.28, season:.24, tide:.22, time:.18, weather:.08},
-    tips:'朝マズメ＆大潮が最強。ベイト（小魚）の回遊次第で爆発する。'
+    tips:'ブリ・サワラ・サゴシなどの回遊魚。朝マズメ＆大潮が最強、ベイトの回遊次第で爆発する。'
   },
   { id:'hata', name:'根魚（キジハタ・カサゴ）', emoji:'🐡',
     temp:{ideal:[18,26], ok:[10,29]},
@@ -221,6 +221,70 @@ const SPECIES = [
     time:{morning:.8, day:.9, evening:.8, night:.3},
     weight:{temp:.35, season:.28, tide:.17, time:.12, weather:.08},
     tips:'砂地を投げ釣りで。夏の高水温期がハイシーズン、日中でも数釣りできる貴重な魚。'
+  },
+  { id:'tachi', name:'タチウオ', emoji:'🗡️',
+    temp:{ideal:[20,27], ok:[16,29]},
+    season:{1:.2,2:.2,3:.2,4:.3,5:.4,6:.5,7:.7,8:1,9:1,10:1,11:.7,12:.4},
+    tideType:{big:.9, mid:1, small:.6}, clarity:'any',
+    time:{morning:1, day:.3, evening:1, night:1},
+    weight:{temp:.3, season:.25, tide:.2, time:.2, weather:.05},
+    tips:'夏〜秋の夕マズメ〜夜が本命。回遊に当たれば連発、指◯本のサイズ狙い。'
+  },
+  { id:'madai', name:'マダイ（真鯛）', emoji:'🌸',
+    temp:{ideal:[15,23], ok:[12,26]},
+    season:{1:.4,2:.4,3:.6,4:.9,5:1,6:.7,7:.6,8:.6,9:.8,10:1,11:.9,12:.5},
+    tideType:{big:1, mid:.9, small:.5}, clarity:'any',
+    time:{morning:1, day:.6, evening:.9, night:.4},
+    weight:{temp:.3, season:.24, tide:.24, time:.15, weather:.07},
+    tips:'鯛ラバやエサで潮を流して探る。春の乗っ込みと秋がチャンス、日中もいける。'
+  },
+  { id:'suzuki', name:'スズキ（シーバス）', emoji:'🌊',
+    temp:{ideal:[14,24], ok:[8,27]},
+    season:{1:.5,2:.5,3:.6,4:.7,5:.7,6:.7,7:.7,8:.7,9:.8,10:.9,11:.8,12:.6},
+    tideType:{big:.9, mid:1, small:.6}, clarity:'sasa',
+    time:{morning:1, day:.4, evening:1, night:.9},
+    weight:{temp:.25, season:.2, tide:.22, time:.23, weather:.1},
+    tips:'河口・ベイト・ササ濁りとマズメ。夜も強い。ルアーで年間通して狙える。'
+  },
+  { id:'chinu', name:'クロダイ（チヌ）', emoji:'🖤',
+    temp:{ideal:[16,26], ok:[12,29]},
+    season:{1:.4,2:.4,3:.6,4:.8,5:.9,6:.9,7:.8,8:.8,9:.8,10:.7,11:.5,12:.4},
+    tideType:{big:.8, mid:1, small:.7}, clarity:'any',
+    time:{morning:.9, day:.7, evening:.9, night:.6},
+    weight:{temp:.3, season:.24, tide:.2, time:.16, weather:.1},
+    tips:'春の乗っ込みが最盛。チニングや落とし込みで、日中でも狙える身近な魚。'
+  },
+  { id:'kamasu', name:'カマス', emoji:'⚡',
+    temp:{ideal:[18,26], ok:[15,28]},
+    season:{1:.2,2:.2,3:.2,4:.3,5:.4,6:.4,7:.5,8:.6,9:.8,10:1,11:.9,12:.5},
+    tideType:{big:.8, mid:1, small:.7}, clarity:'any',
+    time:{morning:1, day:.5, evening:1, night:.6},
+    weight:{temp:.3, season:.28, tide:.16, time:.2, weather:.06},
+    tips:'秋の回遊が本番。朝夕マズメに表層を小型ルアーで。群れに当たれば入れ食い。'
+  },
+  { id:'mebaru', name:'メバル', emoji:'🔦',
+    temp:{ideal:[12,18], ok:[8,22]},
+    season:{1:1,2:1,3:1,4:.8,5:.6,6:.3,7:.2,8:.2,9:.3,10:.5,11:.7,12:.9},
+    tideType:{big:.8, mid:1, small:.8}, clarity:'clear',
+    time:{morning:.7, day:.3, evening:.9, night:1},
+    weight:{temp:.3, season:.26, tide:.16, time:.22, weather:.06},
+    tips:'冬〜春の夜が本命。常夜灯やスロー巻きのメバリングで。低水温期の癒し。'
+  },
+  { id:'kawahagi', name:'カワハギ', emoji:'🍂',
+    temp:{ideal:[14,22], ok:[10,26]},
+    season:{1:.5,2:.4,3:.4,4:.4,5:.5,6:.5,7:.5,8:.6,9:.7,10:.9,11:1,12:.8},
+    tideType:{big:.8, mid:1, small:.7}, clarity:'any',
+    time:{morning:.7, day:1, evening:.7, night:.3},
+    weight:{temp:.3, season:.26, tide:.18, time:.14, weather:.12},
+    tips:'砂地〜根周りをエサ釣りで。秋〜初冬は肝パン。エサ取り名人、日中の宝探し。'
+  },
+  { id:'maika', name:'マイカ（ケンサキ）', emoji:'🌙',
+    temp:{ideal:[18,25], ok:[15,27]},
+    season:{1:.2,2:.2,3:.3,4:.4,5:.5,6:.8,7:1,8:1,9:.9,10:.6,11:.3,12:.2},
+    tideType:{big:.8, mid:1, small:.6}, clarity:'clear',
+    time:{morning:.6, day:.3, evening:.9, night:1},
+    weight:{temp:.32, season:.26, tide:.16, time:.2, weather:.06},
+    tips:'夏の夜が本番。ウキ釣りやエギで。富山湾の夏の風物詩、食味も抜群。'
   }
 ];
 
