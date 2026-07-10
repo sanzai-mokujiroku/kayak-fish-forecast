@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>カヤック釣果予報</title>
+<meta name="description" content="水温・潮・天気から、狙いの魚種が釣れそうかを判定する簡易ツール（富山湾ほか全国対応）">
+<meta name="theme-color" content="#0a2540">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="釣果予報">
+<style>
+  :root{
+    --a:#1e9e54; --b:#0a6cb3; --c:#e6a100; --d:#8a97a6;
+    --a-bg:#e8f7ee; --b-bg:#e7f1fa; --c-bg:#fdf4e0; --d-bg:#eef1f4;
+    --bg:#f3f6f9; --card:#ffffff; --ink:#1c2733; --muted:#67778a;
+    --line:#e2e8f0; --accent:#0a2540; --sea:#0a6cb3;
+    --stop:#d63031;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",Meiryo,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:16px 14px 40px}
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  header.top h1{font-size:18px;margin:0;letter-spacing:.02em}
+  .refresh{border:1px solid var(--line);background:var(--card);color:var(--sea);
+    border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .refresh:active{transform:scale(.97)}
+  .locbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12.5px;color:var(--muted)}
+  .locbar .loc{flex:1;line-height:1.45}
+  .locbar .loc b{color:var(--ink);font-weight:600}
+  .locbtn{border:1px solid var(--line);background:var(--card);color:var(--sea);border-radius:999px;
+    padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+  .locbtn:active{transform:scale(.97)}
+  .locwarn{color:var(--stop)}
+  .tabs{display:flex;gap:8px;margin:0 0 14px}
+  .tabs button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--muted);
+    border-radius:12px;padding:10px 4px;font-size:14px;font-weight:700;cursor:pointer;line-height:1.2}
+  .tabs button small{display:block;font-size:11px;font-weight:500;margin-top:1px;color:var(--muted)}
+  .tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .tabs button.active small{color:#b9c9d8}
+
+  /* 環境サマリ */
+  .env{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 15px;margin-bottom:14px;
+    box-shadow:0 1px 2px rgba(16,42,67,.04)}
+  .env h2{font-size:15px;margin:0 0 10px}
+  .env-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+  .env-cell{display:flex;flex-direction:column;gap:1px}
+  .env-cell .k{font-size:11px;color:var(--muted)}
+  .env-cell .v{font-size:15px;font-weight:700}
+  .env-cell .v small{font-size:11px;font-weight:500;color:var(--muted)}
+  .sst .v{color:var(--sea)}
+  .safety{margin-top:11px;font-size:12px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:10px}
+  .safety .pill{font-size:11px;font-weight:800;color:#fff;border-radius:7px;padding:3px 9px;letter-spacing:.03em}
+  .pill.GO{background:var(--a)} .pill.CAUTION{background:var(--c)} .pill.STOP{background:var(--stop)}
+  .safety .txt{color:var(--muted);line-height:1.4}
+
+  /* 魚種カード */
+  .fish{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:0;margin-bottom:12px;
+    overflow:hidden;box-shadow:0 1px 2px rgba(16,42,67,.04)}
+  .fish-head{display:flex;align-items:center;gap:12px;padding:13px 15px}
+  .grade{flex:none;width:52px;height:52px;border-radius:14px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;color:#fff;line-height:1}
+  .grade .mk{font-size:26px;font-weight:800}
+  .grade.A{background:var(--a)} .grade.B{background:var(--b)} .grade.C{background:var(--c)} .grade.D{background:var(--d)}
+  .fish-main{flex:1;min-width:0}
+  .fish-main .nm{font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px}
+  .fish-main .lbl{font-size:12px;color:var(--muted);margin-top:1px}
+  .fish-main .lbl b{color:var(--ink);font-weight:700}
+  .bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin:7px 15px 0}
+  .bar > i{display:block;height:100%;border-radius:99px}
+  .bar.A > i{background:var(--a)} .bar.B > i{background:var(--b)} .bar.C > i{background:var(--c)} .bar.D > i{background:var(--d)}
+  .fish-body{padding:10px 15px 14px}
+  .reason{font-size:13px;color:var(--ink);line-height:1.55}
+  .reason .hi{color:var(--a);font-weight:700}
+  .reason .lo{color:var(--stop);font-weight:700}
+  .factors{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+  .factors .f{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--muted);
+    display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+  .factors .f b{color:var(--ink);font-weight:700}
+  .factors .f .s{font-size:10px}
+  .hours-cap{font-size:11px;color:var(--muted);margin:11px 0 6px;line-height:1.4}
+  .hours-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -2px;
+    scrollbar-width:thin;-ms-overflow-style:none}
+  .hours-wrap::-webkit-scrollbar{height:5px}
+  .hours-wrap::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+  .hours{display:flex;gap:4px;padding:0 2px 5px;width:max-content}
+  .hcell{flex:0 0 auto;width:42px;border-radius:9px;padding:5px 0 6px;text-align:center;
+    border:2px solid transparent}
+  .hcell .hh{display:block;font-size:10px;color:var(--muted);line-height:1}
+  .hcell .hs{display:block;font-size:16px;font-weight:800;line-height:1.15;margin-top:3px}
+  .hcell.A{background:var(--a-bg)} .hcell.A .hs{color:var(--a)}
+  .hcell.B{background:var(--b-bg)} .hcell.B .hs{color:var(--b)}
+  .hcell.C{background:var(--c-bg)} .hcell.C .hs{color:#b8820a}
+  .hcell.D{background:var(--d-bg)} .hcell.D .hs{color:var(--d)}
+  .hcell.peak{border-color:var(--accent)}
+  .tips{font-size:11.5px;color:var(--muted);margin-top:11px;line-height:1.5;background:var(--bg);border-radius:9px;padding:8px 10px}
+
+  .tide-row{padding:12px 15px;background:var(--card);border:1px solid var(--line);border-radius:16px;font-size:13px;margin-bottom:14px}
+  .tide-row .k{font-size:11px;color:var(--muted);margin:0 0 5px}
+  .tide-line{display:flex;flex-wrap:wrap;gap:6px 14px}
+  .tide-line span{white-space:nowrap} .tide-line .hi{color:#0a6cb3;font-weight:600} .tide-line .lo{color:#b06a00;font-weight:600}
+
+  .disclaimer{background:#fff;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:12px 14px;font-size:12.5px;color:var(--ink);margin:16px 0 14px;line-height:1.7}
+  .disclaimer b{color:var(--stop)}
+  .credit{font-size:11px;color:var(--muted);text-align:center;line-height:1.8} .credit a{color:var(--muted)}
+  .loading,.error{text-align:center;padding:40px 16px;color:var(--muted)} .error{color:var(--stop)}
+  .spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--sea);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>🎣 カヤック釣果予報</h1>
+    <button class="refresh" id="refreshBtn">↻ 更新</button>
+  </header>
+
+  <div class="locbar">
+    <div class="loc" id="locText">現在地を取得しています…</div>
+    <button class="locbtn" id="locBtn">📍 現在地</button>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button data-off="0" class="active">今日<small id="lab0"></small></button>
+    <button data-off="1">明日<small id="lab1"></small></button>
+    <button data-off="2">明後日<small id="lab2"></small></button>
+  </div>
+
+  <div id="content">
+    <div class="loading"><div class="spinner"></div>データを取得しています…</div>
+  </div>
+
+  <div class="disclaimer">
+    ⚠️ <b>これは個人が自分のために作った「釣れそう度」の目安ツールです。</b>魚が釣れるかは当日のベイト・地形・運の要素も大きく、判定はあくまで参考です。海に<b>出られるか</b>の安全判断は、必ず「出艇判断チェック」や現地確認と合わせて<b>自己責任</b>で行ってください。
+  </div>
+
+  <p class="credit">
+    気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
+    潮汐データ：<a href="https://tide736.net/" target="_blank" rel="noopener">tide736.net</a>（気象庁 潮位表をもとに算出）<br>
+    <span style="opacity:.7">版 2026-07-10 v2（時間帯別100点・4魚種）</span>
+  </p>
+</div>
+
+<script src="stations.js"></script>
+<script>
+//=================== 設定 ===================
+const TZ = "Asia/Tokyo";
+const FORECAST_DAYS = 3;
+const DEFAULT_LOC = {lat:36.80, lon:137.20, name:"富山湾（既定）"};
+
+// 安全（出艇可否）のしきい値：go-check と揃える
+const WIND_GO=3.0, WIND_STOP=5.0, WAVE_STOP=0.5, THUNDER_CODES=[95,96,99];
+
+const COMPASS=['北','北北東','北東','東北東','東','東南東','南東','南南東','南','南南西','南西','西南西','西','西北西','北西','北北西'];
+const WEEKDAY=['日','月','火','水','木','金','土'];
+const WMO={0:'快晴',1:'晴れ',2:'薄曇り',3:'曇り',45:'霧',48:'霧',51:'霧雨',53:'霧雨',55:'霧雨',
+  61:'小雨',63:'雨',65:'強い雨',71:'雪',73:'雪',75:'大雪',80:'にわか雨',81:'にわか雨',82:'激しい雨',
+  95:'雷雨',96:'雷雨',99:'雷雨'};
+
+//=================== 魚種プロファイル（ここを直せば判定を調整できます） ===================
+// temp: 適水温[ideal下,上] / 許容[ok下,上]（℃）
+// season: 月ごとの旬スコア(0〜1)
+// tideType: 潮回りの好み（大潮/中潮/小潮）
+// clarity: 'clear'=澄み好み / 'sasa'=ササ濁り好み / 'any'=気にしない
+// time: 時間帯の好み  weight: 各要素の重み
+const SPECIES = [
+  { id:'aori', name:'アオリイカ', emoji:'🦑',
+    temp:{ideal:[19,24], ok:[15,27]},
+    season:{1:.2,2:.2,3:.6,4:1,5:1,6:.9,7:.4,8:.5,9:.9,10:1,11:1,12:.4},
+    tideType:{big:.8, mid:1, small:.6}, clarity:'clear',
+    time:{morning:1, day:.4, evening:1, night:.75},
+    weight:{temp:.38, season:.24, tide:.18, time:.14, weather:.06},
+    tips:'澄んだ潮＆朝夕マズメが鍵。春は大型の親イカ、秋は数釣りの新子。'
+  },
+  { id:'buri', name:'青物（ブリ・ハマチ）', emoji:'🐟',
+    temp:{ideal:[15,21], ok:[12,25]},
+    season:{1:.3,2:.2,3:.3,4:.5,5:.6,6:.6,7:.5,8:.5,9:.8,10:1,11:1,12:.7},
+    tideType:{big:1, mid:.8, small:.4}, clarity:'any',
+    time:{morning:1, day:.4, evening:.7, night:.3},
+    weight:{temp:.28, season:.24, tide:.22, time:.18, weather:.08},
+    tips:'朝マズメ＆大潮が最強。ベイト（小魚）の回遊次第で爆発する。'
+  },
+  { id:'hata', name:'根魚（キジハタ・カサゴ）', emoji:'🐡',
+    temp:{ideal:[18,26], ok:[10,29]},
+    season:{1:.4,2:.4,3:.5,4:.6,5:.7,6:.9,7:1,8:1,9:1,10:.9,11:.6,12:.5},
+    tideType:{big:.9, mid:1, small:.7}, clarity:'any',
+    time:{morning:.9, day:.5, evening:1, night:1},
+    weight:{temp:.3, season:.22, tide:.2, time:.2, weather:.08},
+    tips:'夕マズメ＆根周りの潮が動く時。夏はキジハタ、冬でもカサゴは狙える。'
+  },
+  { id:'flat', name:'フラット（ヒラメ・マゴチ）', emoji:'🐠',
+    temp:{ideal:[16,23], ok:[12,27]},
+    season:{1:.4,2:.4,3:.6,4:.7,5:.6,6:.7,7:.8,8:.8,9:.9,10:1,11:.9,12:.6},
+    tideType:{big:.9, mid:1, small:.6}, clarity:'sasa',
+    time:{morning:1, day:.5, evening:.9, night:.4},
+    weight:{temp:.32, season:.22, tide:.2, time:.18, weather:.08},
+    tips:'ベイト接岸＆ササ濁り＆マズメ。秋春はヒラメ、夏はマゴチ。'
+  }
+];
+
+//=================== ユーティリティ ===================
+function dirText(deg){ return COMPASS[Math.round(deg/22.5)%16]; }
+function pad(n){ return String(n).padStart(2,'0'); }
+function jstDateParts(offsetDays=0){
+  const now=new Date(Date.now()+offsetDays*86400000);
+  const f=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'});
+  const [y,m,d]=f.format(now).split('-');
+  return {y:+y,m:+m,d:+d,str:`${y}-${m}-${d}`};
+}
+function hourOf(iso){ return +iso.slice(11,13); }
+function dateOf(iso){ return iso.slice(0,10); }
+function weekdayOf(dateStr){ const [y,m,d]=dateStr.split('-').map(Number); return WEEKDAY[new Date(y,m-1,d).getDay()]; }
+function mdLabel(dateStr){ const [,m,d]=dateStr.split('-').map(Number); return `${m}/${d}`; }
+function mdjp(dateStr){ const [,m,d]=dateStr.split('-').map(Number); return `${m}月${d}日`; }
+function monthOf(dateStr){ return +dateStr.slice(5,7); }
+function hm2dec(hm){ const [h,m]=hm.split(':').map(Number); return h+(m||0)/60; }
+function dec2hm(x){ const h=Math.floor(x), m=Math.round((x-h)*60); return `${h}:${pad(m)}`; }
+function clamp(x,a,b){ return Math.max(a,Math.min(b,x)); }
+function haversine(a,b,c,d){
+  const R=6371,toR=x=>x*Math.PI/180;
+  const dLat=toR(c-a),dLon=toR(d-b);
+  const s=Math.sin(dLat/2)**2+Math.cos(toR(a))*Math.cos(toR(c))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s));
+}
+function nearestStation(lat,lon){
+  let best=null,bd=Infinity;
+  for(const s of TIDE_STATIONS){ const d=haversine(lat,lon,s[2],s[3]); if(d<bd){bd=d;best=s;} }
+  return {pc:best[0],hc:best[1],lat:best[2],lon:best[3],name:best[4],dist:bd};
+}
+function escapeHtml(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+//=================== データ取得 ===================
+async function getJSON(url){ const r=await fetch(url); if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }
+async function fetchWeather(lat,lon){
+  const base=`latitude=${lat}&longitude=${lon}&timezone=${TZ}&forecast_days=${FORECAST_DAYS}`;
+  const wxUrl=`https://api.open-meteo.com/v1/forecast?${base}`
+    +`&hourly=wind_speed_10m,wind_direction_10m,weather_code,pressure_msl,precipitation`
+    +`&daily=weather_code,sunrise,sunset,precipitation_sum&wind_speed_unit=ms`;
+  const marUrl=`https://marine-api.open-meteo.com/v1/marine?${base}&hourly=sea_surface_temperature,wave_height`;
+  const [wx,mar]=await Promise.all([getJSON(wxUrl),getJSON(marUrl).catch(e=>{console.warn("marine fail",e);return null;})]);
+  return {wx,mar};
+}
+async function fetchTide(st){
+  const t=jstDateParts(0);
+  const url=`https://tide736.net/api/get_tide.php?pc=${st.pc}&hc=${st.hc}&yr=${t.y}&mn=${t.m}&dy=${t.d}&rg=week`;
+  return getJSON(url).catch(e=>{console.warn("tide fail",e);return null;});
+}
+
+//=================== 日別の環境データを組み立てる ===================
+function idxAt(times,dateStr,h){
+  for(let i=0;i<times.length;i++){ if(dateOf(times[i])===dateStr && hourOf(times[i])===h) return i; }
+  return -1;
+}
+function dailyIdx(dayArr,dateStr){ for(let i=0;i<dayArr.length;i++){ if(dayArr[i].slice(0,10)===dateStr) return i; } return -1; }
+
+// 潮の「動き」：極値（満・干）の間はsinで最大、満干ちょうどは緩む(0)
+function movingAt(hour, extremes){
+  if(extremes.length<2) return .55;
+  let a=null,b=null;
+  for(let i=0;i<extremes.length-1;i++){ if(hour>=extremes[i].t && hour<=extremes[i+1].t){a=extremes[i];b=extremes[i+1];break;} }
+  if(!a){ if(hour<extremes[0].t){a=extremes[0];b=extremes[1];} else {a=extremes[extremes.length-2];b=extremes[extremes.length-1];} }
+  const span=b.t-a.t; if(span<=0) return .55;
+  const phase=clamp((hour-a.t)/span,0,1);
+  return Math.sin(Math.PI*phase);
+}
+
+function buildEnv(data, dayOffset){
+  const {wx,mar,tide}=data;
+  const dateStr=jstDateParts(dayOffset).str;
+  const month=monthOf(dateStr);
+
+  // 日中(6〜18時)の海象・気象を集計
+  const wt=wx.hourly.time;
+  const wind=wx.hourly.wind_speed_10m, wdir=wx.hourly.wind_direction_10m;
+  const wc=wx.hourly.weather_code, pres=wx.hourly.pressure_msl, prec=wx.hourly.precipitation;
+  const mt=mar?mar.hourly.time:[], sst=mar?mar.hourly.sea_surface_temperature:[], wave=mar?mar.hourly.wave_height:[];
+
+  let maxWind=0, maxWave=0, anyWave=false, thunder=false, sstSum=0, sstN=0, presMin=9999, precSum=0;
+  for(let h=5;h<=19;h++){
+    const i=idxAt(wt,dateStr,h); if(i<0) continue;
+    if(wind[i]>maxWind) maxWind=wind[i];
+    if(THUNDER_CODES.includes(wc[i])) thunder=true;
+    if(pres[i]!=null && pres[i]<presMin) presMin=pres[i];
+    if(prec[i]!=null) precSum+=prec[i];
+    const mi=mt.length?idxAt(mt,dateStr,h):-1;
+    if(mi>=0){
+      if(wave[mi]!=null){ anyWave=true; if(wave[mi]>maxWave) maxWave=wave[mi]; }
+      if(sst[mi]!=null){ sstSum+=sst[mi]; sstN++; }
+    }
+  }
+  const sstAvg = sstN? sstSum/sstN : null;
+
+  // 天気（日別）
+  const di=dailyIdx(wx.daily.time,dateStr);
+  const dayCode = di>=0? wx.daily.weather_code[di] : (idxAt(wt,dateStr,12)>=0? wc[idxAt(wt,dateStr,12)] : null);
+  const sunrise = di>=0 && wx.daily.sunrise? hm2dec(wx.daily.sunrise[di].slice(11,16)) : 5;
+  const sunset  = di>=0 && wx.daily.sunset ? hm2dec(wx.daily.sunset[di].slice(11,16))  : 19;
+  const precDay = di>=0 && wx.daily.precipitation_sum!=null? wx.daily.precipitation_sum[di] : precSum;
+
+  // 潮汐
+  let tideDay=null;
+  if(tide&&tide.tide&&tide.tide.chart&&tide.tide.chart[dateStr]){
+    const c=tide.tide.chart[dateStr];
+    const flood=(c.flood||[]).map(x=>({time:x.time,cm:+x.cm}));
+    const ebb=(c.edd||[]).map(x=>({time:x.time,cm:+x.cm}));
+    const extremes=[...flood.map(x=>({t:hm2dec(x.time.slice(0,5)),cm:x.cm})),
+                    ...ebb.map(x=>({t:hm2dec(x.time.slice(0,5)),cm:x.cm}))].sort((p,q)=>p.t-q.t);
+    let hiCm=-1e9, loCm=1e9;
+    flood.forEach(x=>hiCm=Math.max(hiCm,x.cm)); ebb.forEach(x=>loCm=Math.min(loCm,x.cm));
+    const range = (hiCm>-1e9&&loCm<1e9)? hiCm-loCm : null;
+    const moon = c.moon||{};
+    const title = moon.title||'';
+    let type = title.indexOf('大潮')>=0?'big' : title.indexOf('中潮')>=0?'mid'
+             : (title.indexOf('小潮')>=0||title.indexOf('長潮')>=0||title.indexOf('若潮')>=0)?'small' : null;
+    if(!type && range!=null){ type = range>=200?'big' : range>=90?'mid' : 'small'; } // 潮位差フォールバック
+    tideDay={flood,ebb,extremes,range,type:type||'mid',title:title||'—',age:moon.age};
+  }
+
+  // 安全（出艇可否）判定
+  let safety='GO';
+  if(thunder || maxWind>=WIND_STOP || (anyWave&&maxWave>=WAVE_STOP)) safety='STOP';
+  else if(maxWind>WIND_GO) safety='CAUTION';
+
+  return {dateStr,month,sstAvg,maxWind,maxWave,anyWave,windDir:(idxAt(wt,dateStr,9)>=0?wdir[idxAt(wt,dateStr,9)]:null),
+    dayCode,sunrise,sunset,precDay,presMin,thunder,tideDay,safety};
+}
+
+//=================== 魚種スコアリング ===================
+function tempScore(t, sp){
+  if(t==null) return .55;
+  const [i0,i1]=sp.temp.ideal,[o0,o1]=sp.temp.ok;
+  if(t>=i0&&t<=i1) return 1;
+  if(t<=o0||t>=o1) return .08;
+  if(t<i0) return .08+.92*(t-o0)/(i0-o0);
+  return .08+.92*(o1-t)/(o1-i1);
+}
+function weatherScore(env, sp){
+  let s=.72;
+  if(env.presMin<1004) s+=.12; else if(env.presMin<1010) s+=.05;   // 低気圧接近は活性↑
+  const p=env.precDay||0;
+  if(sp.clarity==='clear'){ if(p>15) s-=.28; else if(p>5) s-=.14; }         // 澄み好み→濁りに弱い
+  else if(sp.clarity==='sasa'){ if(p>=1&&p<=12) s+=.12; else if(p>25) s-=.12; } // ササ濁り歓迎、出水は×
+  if(env.thunder) s-=.1;
+  return clamp(s,.05,1);
+}
+// 時間帯の釣れやすさ：朝マズメ・夕マズメを鋭いピーク、日中はベース、夜は魚種次第
+function timeFactorAt(h, sr, ss, sp){
+  const night = sp.time.night ?? .25;
+  const isDay = h >= sr-0.5 && h <= ss+0.5;
+  const base = isDay ? sp.time.day : night;
+  const w = 1.3;                                   // マズメの効く幅（時間）
+  const gM = Math.exp(-(((h-sr)/w)**2));           // 朝マズメのピーク
+  const gE = Math.exp(-(((h-ss)/w)**2));           // 夕マズメのピーク
+  return Math.max(base, sp.time.morning*gM, sp.time.evening*gE);
+}
+function timeLabel(h, sr, ss){
+  if(Math.abs(h-sr)<=1.5) return '朝マズメ';
+  if(Math.abs(h-ss)<=1.5) return '夕マズメ';
+  if(h<sr-0.5 || h>ss+0.5) return '夜';
+  return '日中';
+}
+// 1時間刻みで釣れそう度(0〜1)を全時間帯ぶん計算し、ピークも拾う
+function scoreSpecies(env, sp){
+  const tS=tempScore(env.sstAvg, sp);
+  const seaS=sp.season[env.month]??.4;
+  const wS=weatherScore(env, sp);
+  const type=env.tideDay?env.tideDay.type:'mid';
+  const typeS=sp.tideType[type];
+  const ex=env.tideDay?env.tideDay.extremes:[];
+  const sr=env.sunrise, ss=env.sunset;
+  const start=Math.max(3,Math.floor(sr-1)), end=Math.min(21,Math.ceil(ss+1));
+
+  const hourly=[]; let peak=null;
+  for(let h=start; h<=end; h++){
+    const move=movingAt(h, ex);
+    const tideF = typeS*0.5 + move*0.5;            // 潮回りの良さ×その時間の潮の動き
+    const timeF = timeFactorAt(h, sr, ss, sp);
+    const total = tS*sp.weight.temp + seaS*sp.weight.season + tideF*sp.weight.tide
+                + timeF*sp.weight.time + wS*sp.weight.weather;
+    const cell = {h, score:clamp(total,0,1), move, tideF, timeF, label:timeLabel(h,sr,ss)};
+    hourly.push(cell);
+    if(!peak || cell.score>peak.score) peak=cell;
+  }
+  return {sp, score:peak.score, peak, hourly,
+    f:{temp:tS,season:seaS,tide:peak.tideF,time:peak.timeF,weather:wS,type}, env};
+}
+function gradeCls(pct){ return pct>=75?'A':pct>=58?'B':pct>=42?'C':'D'; }
+function grade(score){
+  if(score>=.75) return {k:'A',mk:'◎',label:'超狙い目'};
+  if(score>=.58) return {k:'B',mk:'○',label:'チャンスあり'};
+  if(score>=.42) return {k:'C',mk:'△',label:'渋め'};
+  return {k:'D',mk:'×',label:'厳しい'};
+}
+
+//=================== 根拠テキスト生成 ===================
+function reasonText(r){
+  const env=r.env, sp=r.sp, f=r.f;
+  const parts=[];
+  // 水温
+  const t=env.sstAvg;
+  if(t==null) parts.push('水温データなし');
+  else if(f.temp>=.85) parts.push(`<span class="hi">水温${t.toFixed(1)}℃は適水温ど真ん中</span>`);
+  else if(f.temp>=.5) parts.push(`水温${t.toFixed(1)}℃はまずまず`);
+  else parts.push(`<span class="lo">水温${t.toFixed(1)}℃は適温から外れて渋い</span>`);
+  // 季節
+  if(f.season>=.9) parts.push('今が旬');
+  else if(f.season<=.35) parts.push('<span class="lo">季節的にはオフ</span>');
+  // 潮
+  const type=env.tideDay?env.tideDay.title:'—';
+  if(f.tide>=.7) parts.push(`${type}で${r.peak.label}に潮もよく動く`);
+  else if(f.tide<=.4) parts.push(`<span class="lo">潮の動きが弱め（${type}）</span>`);
+  else parts.push(`${type}`);
+  // ピーク時間帯
+  parts.push(`ピークは<b>${r.peak.label}・${r.peak.h}時ごろ（${Math.round(r.peak.score*100)}点）</b>`);
+  return parts.join('、')+'。';
+}
+function factorChips(r){
+  const f=r.f;
+  const stars=v=> v>=.85?'◎':v>=.6?'○':v>=.4?'△':'×';
+  const items=[
+    ['水温',stars(f.temp)],['季節',stars(f.season)],['潮',stars(f.tide)],['時合',stars(f.time)],['天気',stars(f.weather)]
+  ];
+  return items.map(([k,v])=>`<span class="f"><b>${k}</b><span class="s">${v}</span></span>`).join('');
+}
+
+//=================== 描画 ===================
+function renderEnv(env){
+  const sst = env.sstAvg!=null? `${env.sstAvg.toFixed(1)}<small> ℃</small>` : '<small>取得不可</small>';
+  const wxTxt = env.dayCode!=null? (WMO[env.dayCode]||'—') : '—';
+  const windTxt = `${env.maxWind.toFixed(1)}<small> m/s</small>` + (env.windDir!=null?` <small>${dirText(env.windDir)}</small>`:'');
+  const waveTxt = env.anyWave? `${env.maxWave.toFixed(1)}<small> m</small>` : '<small>—</small>';
+  const tideTxt = env.tideDay? `${env.tideDay.title}` + (env.tideDay.range!=null?`<small> 差${Math.round(env.tideDay.range)}cm</small>`:'') : '<small>取得不可</small>';
+  const sun = `${dec2hm(env.sunrise)}<small> / </small>${dec2hm(env.sunset)}`;
+  const safeLabel={GO:'出られそう',CAUTION:'要確認',STOP:'出艇はやめて'};
+  return `<div class="env">
+    <h2>🌊 ${mdjp(env.dateStr)}（${weekdayOf(env.dateStr)}）の海況</h2>
+    <div class="env-grid">
+      <div class="env-cell sst"><span class="k">水温（日中平均）</span><span class="v">${sst}</span></div>
+      <div class="env-cell"><span class="k">天気</span><span class="v">${wxTxt}</span></div>
+      <div class="env-cell"><span class="k">潮回り</span><span class="v">${tideTxt}</span></div>
+      <div class="env-cell"><span class="k">日の出／日の入</span><span class="v">${sun}</span></div>
+      <div class="env-cell"><span class="k">最大風速</span><span class="v">${windTxt}</span></div>
+      <div class="env-cell"><span class="k">最大波高</span><span class="v">${waveTxt}</span></div>
+    </div>
+    <div class="safety">
+      <span class="pill ${env.safety}">${env.safety}</span>
+      <span class="txt">出艇の安全目安：<b>${safeLabel[env.safety]}</b>${env.thunder?'（⚡雷の予報あり）':''}。詳しくは出艇判断チェックで確認を。</span>
+    </div>
+  </div>`;
+}
+function renderHours(r){
+  const cells=r.hourly.map(c=>{
+    const pct=Math.round(c.score*100);
+    const cls=gradeCls(pct);
+    const isPeak=(c===r.peak)?' peak':'';
+    return `<div class="hcell ${cls}${isPeak}"><span class="hh">${c.h}時</span><span class="hs">${pct}</span></div>`;
+  }).join('');
+  return `<p class="hours-cap">🕒 時間帯別の釣れそう度（100点満点・行ける時間で選ぼう →横スクロール）</p>
+    <div class="hours-wrap"><div class="hours">${cells}</div></div>`;
+}
+function renderFish(r){
+  const g=grade(r.score);
+  const pct=Math.round(clamp(r.score,0,1)*100);
+  return `<div class="fish">
+    <div class="fish-head">
+      <div class="grade ${g.k}"><span class="mk">${g.mk}</span></div>
+      <div class="fish-main">
+        <div class="nm">${r.sp.emoji} ${escapeHtml(r.sp.name)}</div>
+        <div class="lbl"><b>${g.label}</b>（ピーク ${pct}点）</div>
+      </div>
+    </div>
+    <div class="bar ${g.k}"><i style="width:${pct}%"></i></div>
+    <div class="fish-body">
+      <div class="reason">${reasonText(r)}</div>
+      ${renderHours(r)}
+      <div class="factors">${factorChips(r)}</div>
+      <div class="tips">💡 ${escapeHtml(r.sp.tips)}</div>
+    </div>
+  </div>`;
+}
+function renderTide(env){
+  if(!env.tideDay) return '';
+  const t=env.tideDay;
+  const hi=t.flood.map(x=>`<span class="hi">満 ${x.time.slice(0,5)} (${x.cm}cm)</span>`).join('');
+  const lo=t.ebb.map(x=>`<span class="lo">干 ${x.time.slice(0,5)} (${x.cm}cm)</span>`).join('');
+  return `<div class="tide-row"><p class="k">潮汐（${escapeHtml(STATION?STATION.name:'')}）</p><div class="tide-line">${hi}${lo}</div></div>`;
+}
+function renderDay(off){
+  if(!DATA) return;
+  const env=buildEnv(DATA, off);
+  const results=SPECIES.map(sp=>scoreSpecies(env,sp)).sort((a,b)=>b.score-a.score);
+  const html = renderEnv(env) + results.map(renderFish).join('') + renderTide(env);
+  document.getElementById('content').innerHTML=html;
+}
+
+//=================== 状態・実行 ===================
+let LOC=null, STATION=null, DATA=null, CURRENT_OFF=0;
+
+function setTabLabels(){
+  for(let off=0;off<3;off++){ document.getElementById('lab'+off).textContent=mdLabel(jstDateParts(off).str); }
+}
+function showDay(off){
+  CURRENT_OFF=off;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active',+b.dataset.off===off));
+  renderDay(off);
+}
+async function load(lat,lon,locLabel){
+  const content=document.getElementById('content');
+  content.innerHTML='<div class="loading"><div class="spinner"></div>データを取得しています…</div>';
+  LOC={lat,lon};
+  STATION=nearestStation(lat,lon);
+  const distTxt=STATION.dist>60?`<span class="locwarn">約${Math.round(STATION.dist)}km・遠い</span>`:`約${Math.round(STATION.dist)}km`;
+  document.getElementById('locText').innerHTML=
+    `📍 <b>${locLabel}</b>（${lat.toFixed(3)}, ${lon.toFixed(3)}）<br>潮汐観測点：<b>${escapeHtml(STATION.name)}</b>（${distTxt}）`;
+  try{
+    const wxp=fetchWeather(lat,lon); const tdp=fetchTide(STATION);
+    const wx=await wxp; const tide=await tdp;
+    DATA={wx:wx.wx,mar:wx.mar,tide};
+    setTabLabels(); showDay(CURRENT_OFF);
+  }catch(e){
+    console.error(e);
+    content.innerHTML=`<div class="error">⚠️ データを取得できませんでした。<br>通信環境を確認して「更新」を押してください。<br><small>${escapeHtml(e.message||e)}</small></div>`;
+  }
+}
+function locateAndLoad(){
+  document.getElementById('locText').textContent='現在地を取得しています…';
+  if(!navigator.geolocation){ fallback('この端末では位置情報を取得できません'); return; }
+  navigator.geolocation.getCurrentPosition(
+    pos=>{ const {latitude,longitude}=pos.coords;
+      try{ localStorage.setItem('kayak_loc',JSON.stringify({lat:latitude,lon:longitude})); }catch(e){}
+      load(latitude,longitude,'現在地'); },
+    err=>{ console.warn('geo err',err); fallbackStored('現在地を取得できませんでした'); },
+    {enableHighAccuracy:true,timeout:10000,maximumAge:300000}
+  );
+}
+function fallbackStored(msg){
+  let saved=null;
+  try{ const v=localStorage.getItem('kayak_loc'); if(v) saved=JSON.parse(v); }catch(e){}
+  if(saved){ document.getElementById('locText').innerHTML=`<span class="locwarn">${msg}。前回の位置で表示します。</span>`; load(saved.lat,saved.lon,'前回の位置'); }
+  else fallback(msg);
+}
+function fallback(msg){
+  document.getElementById('locText').innerHTML=`<span class="locwarn">${msg}。既定地点（富山湾）で表示します。</span>`;
+  load(DEFAULT_LOC.lat,DEFAULT_LOC.lon,DEFAULT_LOC.name);
+}
+
+//=================== 初期化 ===================
+(function init(){
+  setTabLabels();
+  document.querySelectorAll('#tabs button').forEach(b=>{ b.addEventListener('click',()=>showDay(+b.dataset.off)); });
+  document.getElementById('refreshBtn').addEventListener('click',()=>{ if(LOC) load(LOC.lat,LOC.lon,'現在地'); else locateAndLoad(); });
+  document.getElementById('locBtn').addEventListener('click',locateAndLoad);
+  locateAndLoad();
+})();
+</script>
+</body>
+</html>
