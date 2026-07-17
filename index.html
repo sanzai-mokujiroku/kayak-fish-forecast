@@ -124,6 +124,34 @@
   .loading,.error{text-align:center;padding:40px 16px;color:var(--muted)} .error{color:var(--stop)}
   .spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--sea);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
   @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* 見せ方トグル */
+  .scopes{display:flex;align-items:center;gap:6px;margin:-6px 0 14px}
+  .scopes-cap{font-size:11px;color:var(--muted);margin-right:2px}
+  .scopes button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--muted);
+    border-radius:10px;padding:7px 4px;font-size:12.5px;font-weight:700;cursor:pointer}
+  .scopes button.active{background:var(--sea);color:#fff;border-color:var(--sea)}
+  .env h2 .stamp{font-weight:500;color:var(--muted);font-size:11px;margin-left:6px}
+  /* トップ3サマリー */
+  .top3{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:11px 13px;margin-bottom:14px;
+    box-shadow:0 1px 2px rgba(16,42,67,.04)}
+  .top3-cap{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:8px}
+  .top3-row{display:flex;gap:8px}
+  .t3{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;
+    border-radius:12px;padding:9px 4px;background:var(--bg)}
+  .t3 .t3mk{font-size:20px;font-weight:800;line-height:1}
+  .t3 .t3nm{font-size:12px;font-weight:700;text-align:center;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+  .t3 .t3pt{font-size:12px;color:var(--muted)} .t3 .t3pt small{font-size:9px}
+  .t3.A{background:var(--a-bg)} .t3.A .t3mk{color:var(--a)}
+  .t3.B{background:var(--b-bg)} .t3.B .t3mk{color:var(--b)}
+  .t3.C{background:var(--c-bg)} .t3.C .t3mk{color:#b8820a}
+  .t3.D{background:var(--d-bg)} .t3.D .t3mk{color:var(--d)}
+  /* 出艇不可の日 */
+  .stopbar{background:#fdecec;border:1px solid #f3b4b4;border-radius:12px;padding:11px 13px;margin-bottom:14px;
+    font-size:12.5px;color:#8a1f1f;line-height:1.6} .stopbar b{color:var(--stop)}
+  .fishlist.faded{opacity:.5}
+  /* 現在時刻セル */
+  .hcell.now{box-shadow:inset 0 0 0 2px var(--sea)} .hcell.now .hh{color:var(--sea);font-weight:800}
 </style>
 </head>
 <body>
@@ -144,6 +172,13 @@
     <button data-off="2">明後日<small id="lab2"></small></button>
   </div>
 
+  <div class="scopes" id="scopes">
+    <span class="scopes-cap">見せ方</span>
+    <button data-scope="now">今から</button>
+    <button data-scope="day" class="active">日中</button>
+    <button data-scope="all">終日</button>
+  </div>
+
   <div id="content">
     <div class="loading"><div class="spinner"></div>データを取得しています…</div>
   </div>
@@ -155,7 +190,7 @@
   <p class="credit">
     気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
     潮汐データ：<a href="https://tide736.net/" target="_blank" rel="noopener">tide736.net</a>（気象庁 潮位表をもとに算出）<br>
-    <span style="opacity:.7">版 2026-07-10 v6（釣行ログ連携・14魚種）</span>
+    <span style="opacity:.7">版 2026-07-17 v7（見せ方切替・現在時刻・トップ3・オフライン対応）</span>
   </p>
 </div>
 
@@ -305,6 +340,8 @@ function jstDateParts(offsetDays=0){
   const [y,m,d]=f.format(now).split('-');
   return {y:+y,m:+m,d:+d,str:`${y}-${m}-${d}`};
 }
+function nowHourJST(){ return +new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',hour12:false}).format(new Date()); }
+function nowHmJST(){ return new Intl.DateTimeFormat('ja-JP',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date()); }
 function hourOf(iso){ return +iso.slice(11,13); }
 function dateOf(iso){ return iso.slice(0,10); }
 function weekdayOf(dateStr){ const [y,m,d]=dateStr.split('-').map(Number); return WEEKDAY[new Date(y,m-1,d).getDay()]; }
@@ -330,7 +367,7 @@ function escapeHtml(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&
 //=================== データ取得 ===================
 async function getJSON(url){ const r=await fetch(url); if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }
 async function fetchWeather(lat,lon){
-  const base=`latitude=${lat}&longitude=${lon}&timezone=${TZ}&forecast_days=${FORECAST_DAYS}`;
+  const base=`latitude=${lat}&longitude=${lon}&timezone=${encodeURIComponent(TZ)}&forecast_days=${FORECAST_DAYS}`;
   const wxUrl=`https://api.open-meteo.com/v1/forecast?${base}`
     +`&hourly=wind_speed_10m,wind_direction_10m,weather_code,pressure_msl,precipitation`
     +`&daily=weather_code,sunrise,sunset,precipitation_sum&wind_speed_unit=ms`;
@@ -464,8 +501,22 @@ function timeLabel(h, sr, ss){
   if(h<sr-0.5 || h>ss+0.5) return '夜';
   return '日中';
 }
-// 1時間刻みで釣れそう度(0〜1)を全時間帯ぶん計算し、ピークも拾う
-function scoreSpecies(env, sp){
+// 見せ方(スコープ)に応じて、代表となる時間帯セル(rep)を選ぶ
+// all=終日 / day=日中(日の出〜日の入) / now=今から(今の時刻以降の日中)
+function pickRep(hourly, scope, sr, ss, nowHour){
+  const isDay = (h)=> h>=Math.floor(sr) && h<=Math.ceil(ss);
+  const inScope = (c)=>{
+    if(scope==='all') return true;
+    if(scope==='now') return isDay(c.h) && (nowHour==null || c.h>=nowHour);
+    return isDay(c.h); // day
+  };
+  let rep=null;
+  for(const c of hourly){ if(inScope(c) && (!rep || c.score>rep.score)) rep=c; }
+  if(!rep){ for(const c of hourly){ if(!rep || c.score>rep.score) rep=c; } } // 範囲内が空なら終日ピークで代替
+  return rep;
+}
+// 1時間刻みで釣れそう度(0〜1)を全時間帯ぶん計算し、スコープに沿った代表ピークを拾う
+function scoreSpecies(env, sp, scope, nowHour){
   const tS=tempScore(env.sstAvg, sp);
   const seaS=sp.season[env.month]??.4;
   const wS=weatherScore(env, sp);
@@ -474,17 +525,16 @@ function scoreSpecies(env, sp){
   const ex=env.tideDay?env.tideDay.extremes:[];
   const sr=env.sunrise, ss=env.sunset;
 
-  const hourly=[]; let peak=null;
+  const hourly=[];
   for(let h=0; h<=23; h++){
     const move=movingAt(h, ex);
     const tideF = typeS*0.5 + move*0.5;            // 潮回りの良さ×その時間の潮の動き
     const timeF = timeFactorAt(h, sr, ss, sp);
     const total = tS*sp.weight.temp + seaS*sp.weight.season + tideF*sp.weight.tide
                 + timeF*sp.weight.time + wS*sp.weight.weather;
-    const cell = {h, score:clamp(total,0,1), move, tideF, timeF, label:timeLabel(h,sr,ss)};
-    hourly.push(cell);
-    if(!peak || cell.score>peak.score) peak=cell;
+    hourly.push({h, score:clamp(total,0,1), move, tideF, timeF, label:timeLabel(h,sr,ss)});
   }
+  const peak = pickRep(hourly, scope||'day', sr, ss, nowHour);
   return {sp, score:peak.score, peak, hourly,
     f:{temp:tS,season:seaS,tide:peak.tideF,time:peak.timeF,weather:wS,type}, env};
 }
@@ -590,7 +640,7 @@ function renderEnv(env){
   const sun = `${dec2hm(env.sunrise)}<small> / </small>${dec2hm(env.sunset)}`;
   const safeLabel={GO:'出られそう',CAUTION:'要確認',STOP:'出艇はやめて'};
   return `<div class="env">
-    <h2>🌊 ${mdjp(env.dateStr)}（${weekdayOf(env.dateStr)}）の海況</h2>
+    <h2>🌊 ${mdjp(env.dateStr)}（${weekdayOf(env.dateStr)}）の海況${FETCHED_AT?`<small class="stamp">${FETCHED_AT}時点</small>`:''}</h2>
     <div class="env-grid">
       <div class="env-cell sst"><span class="k">水温（日中平均）</span><span class="v">${sst}</span></div>
       <div class="env-cell"><span class="k">天気</span><span class="v">${wxTxt}</span></div>
@@ -601,18 +651,20 @@ function renderEnv(env){
     </div>
     <div class="safety">
       <span class="pill ${env.safety}">${env.safety}</span>
-      <span class="txt">出艇の安全目安：<b>${safeLabel[env.safety]}</b>${env.thunder?'（⚡雷の予報あり）':''}。詳しくは出艇判断チェックで確認を。</span>
+      <span class="txt">出艇の安全目安：<b>${safeLabel[env.safety]}</b>${env.thunder?'（⚡雷の予報あり）':''}${!env.anyWave?'（波データ未取得のため風・雷で判定）':''}。詳しくは出艇判断チェックで確認を。</span>
     </div>
   </div>`;
 }
-function renderHours(r){
+function renderHours(r, isToday, nowHour){
   const cells=r.hourly.map(c=>{
     const pct=Math.round(c.score*100);
     const cls=gradeCls(pct);
     const isPeak=(c===r.peak)?' peak':'';
-    return `<div class="hcell ${cls}${isPeak}"><span class="hh">${c.h}時</span><span class="hs">${pct}</span></div>`;
+    const isNow=(isToday && nowHour!=null && c.h===nowHour)?' now':'';
+    const hh=isNow?'今':`${c.h}時`;
+    return `<div class="hcell ${cls}${isPeak}${isNow}"><span class="hh">${hh}</span><span class="hs">${pct}</span></div>`;
   }).join('');
-  return `<p class="hours-cap">🕒 時間帯別の釣れそう度（0〜23時・100点満点・行ける時間で選ぼう →横スクロール）</p>
+  return `<p class="hours-cap">🕒 時間帯別の釣れそう度（0〜23時・100点満点・${isToday?'<b>今</b>=現在時刻・':''}枠=狙い目 →横スクロール）</p>
     <div class="hours-wrap"><div class="hours">${cells}</div></div>`;
 }
 function renderPersonal(r){
@@ -625,7 +677,7 @@ function renderPersonal(r){
   }
   return `<div class="personal">${s}</div>`;
 }
-function renderFish(r){
+function renderFish(r, isToday, nowHour){
   const g=grade(r.score);
   const pct=Math.round(clamp(r.score,0,1)*100);
   return `<div class="fish">
@@ -639,7 +691,7 @@ function renderFish(r){
     <div class="bar ${g.k}"><i style="width:${pct}%"></i></div>
     <div class="fish-body">
       <div class="reason">${reasonText(r)}</div>
-      ${renderHours(r)}
+      ${renderHours(r, isToday, nowHour)}
       <div class="factors">${factorChips(r)}</div>
       ${renderPersonal(r)}
       <div class="tips">💡 ${escapeHtml(r.sp.tips)}</div>
@@ -653,19 +705,36 @@ function renderTide(env){
   const lo=t.ebb.map(x=>`<span class="lo">干 ${x.time.slice(0,5)} (${x.cm}cm)</span>`).join('');
   return `<div class="tide-row"><p class="k">潮汐（${escapeHtml(STATION?STATION.name:'')}）</p><div class="tide-line">${hi}${lo}</div></div>`;
 }
+function renderTop3(results, scope){
+  const scopeLbl={now:'今から',day:'日中',all:'終日'}[scope]||'';
+  const chips=results.slice(0,3).map(r=>{
+    const g=grade(r.score); const pct=Math.round(r.score*100);
+    const nm=r.sp.name.replace(/（.*/,'');
+    return `<div class="t3 ${g.k}"><span class="t3mk">${g.mk}</span><span class="t3nm">${r.sp.emoji} ${escapeHtml(nm)}</span><span class="t3pt">${pct}<small>点</small></span></div>`;
+  }).join('');
+  return `<div class="top3"><div class="top3-cap">🎯 ${scopeLbl}の狙い目トップ3</div><div class="top3-row">${chips}</div></div>`;
+}
 function renderDay(off){
   if(!DATA) return;
   TRIPS = readTrips();
   const env=buildEnv(DATA, off);
-  const results=SPECIES.map(sp=>scoreSpecies(env,sp)).sort((a,b)=>b.score-a.score);
+  const isToday = off===0;
+  const nowHour = isToday ? nowHourJST() : null;
+  const scope = (SCOPE==='now' && !isToday) ? 'day' : SCOPE;   // 「今から」は今日のみ有効
+  const results=SPECIES.map(sp=>scoreSpecies(env,sp,scope,nowHour)).sort((a,b)=>b.score-a.score);
   const banner = TRIPS.length ? '' :
     `<div class="logbanner">📓 <b>釣行ログ</b>に釣行を記録すると、ここに「あなたの実績（この魚が何回中何回釣れたか）」が出て、判定の答え合わせができます。<br><a href="../kayak-fishing-log/">釣行ログを開く →</a></div>`;
-  const html = renderEnv(env) + banner + results.map(renderFish).join('') + renderTide(env);
+  const stopNote = env.safety==='STOP'
+    ? `<div class="stopbar">⚠️ 本日は<b>出艇不可の予報</b>（強風・高波・雷）。下の釣れそう度は「もし出られたら」の参考です。</div>` : '';
+  const cardsCls = env.safety==='STOP' ? ' faded' : '';
+  const html = renderEnv(env) + stopNote + renderTop3(results, scope) + banner
+    + `<div class="fishlist${cardsCls}">` + results.map(r=>renderFish(r,isToday,nowHour)).join('') + `</div>`
+    + renderTide(env);
   document.getElementById('content').innerHTML=html;
 }
 
 //=================== 状態・実行 ===================
-let LOC=null, STATION=null, DATA=null, CURRENT_OFF=0;
+let LOC=null, STATION=null, DATA=null, CURRENT_OFF=0, SCOPE='day', FETCHED_AT='';
 
 function setTabLabels(){
   for(let off=0;off<3;off++){ document.getElementById('lab'+off).textContent=mdLabel(jstDateParts(off).str); }
@@ -687,6 +756,7 @@ async function load(lat,lon,locLabel){
     const wxp=fetchWeather(lat,lon); const tdp=fetchTide(STATION);
     const wx=await wxp; const tide=await tdp;
     DATA={wx:wx.wx,mar:wx.mar,tide};
+    FETCHED_AT=nowHmJST();
     setTabLabels(); showDay(CURRENT_OFF);
   }catch(e){
     console.error(e);
@@ -719,9 +789,17 @@ function fallback(msg){
 (function init(){
   setTabLabels();
   document.querySelectorAll('#tabs button').forEach(b=>{ b.addEventListener('click',()=>showDay(+b.dataset.off)); });
+  document.querySelectorAll('#scopes button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      SCOPE=b.dataset.scope;
+      document.querySelectorAll('#scopes button').forEach(x=>x.classList.toggle('active',x===b));
+      renderDay(CURRENT_OFF);
+    });
+  });
   document.getElementById('refreshBtn').addEventListener('click',()=>{ if(LOC) load(LOC.lat,LOC.lon,'現在地'); else locateAndLoad(); });
   document.getElementById('locBtn').addEventListener('click',locateAndLoad);
   locateAndLoad();
+  if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{})); }
 })();
 </script>
 </body>
