@@ -179,6 +179,10 @@
   .fishlist.faded{opacity:.5}
   /* 現在時刻セル */
   .hcell.now{box-shadow:inset 0 0 0 2px var(--sea)} .hcell.now .hh{color:var(--sea);font-weight:800}
+  .relnav{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:18px 0 10px}
+  .relnav .cap{width:100%;text-align:center;color:var(--muted);font-size:11px;margin-bottom:2px}
+  .relnav a{color:var(--sea);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;text-decoration:none;font-weight:600;font-size:12px}
+  .relnav a:active{transform:scale(.97)}
 </style>
 </head>
 <body>
@@ -213,6 +217,13 @@
   <div class="disclaimer">
     ⚠️ <b>これは個人が自分のために作った「釣れそう度」の目安ツールです。</b>魚が釣れるかは当日のベイト・地形・運の要素も大きく、判定はあくまで参考です。海に<b>出られるか</b>の安全判断は、必ず「出艇判断チェック」や現地確認と合わせて<b>自己責任</b>で行ってください。
   </div>
+
+  <nav class="relnav">
+    <span class="cap">姉妹ツール・ブログ</span>
+    <a href="https://sanzai-mokujiroku.github.io/kayak-go-check/">🌊 出艇判断</a>
+    <a href="https://sanzai-mokujiroku.github.io/kayak-fishing-log/">📓 釣行ログ</a>
+    <a href="https://kayak-papa.hatenablog.com/">📖 ブログ「散財黙示録」</a>
+  </nav>
 
   <p class="credit">
     気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
