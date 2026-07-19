@@ -183,6 +183,20 @@
   .relnav .cap{width:100%;text-align:center;color:var(--muted);font-size:11px;margin-bottom:2px}
   .relnav a{color:var(--sea);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;text-decoration:none;font-weight:600;font-size:12px}
   .relnav a:active{transform:scale(.97)}
+  .guide{background:var(--card);border:1px solid var(--line);border-radius:16px;margin:16px 0;overflow:hidden}
+  .guide>summary{padding:13px 15px;font-weight:700;font-size:13.5px;color:var(--ink);cursor:pointer;list-style:none}
+  .guide>summary::-webkit-details-marker{display:none}
+  .guide>summary::after{content:"＋";float:right;color:var(--muted);font-weight:400}
+  .guide[open]>summary::after{content:"−"}
+  .guide-body{padding:0 15px 15px;font-size:13px;line-height:1.85;color:var(--ink)}
+  .guide-body h3{font-size:13px;margin:16px 0 6px;color:var(--sea)}
+  .guide-body p{margin:0 0 10px}
+  .guide-body ol,.guide-body ul{margin:0 0 10px;padding-left:1.3em}
+  .guide-body li{margin-bottom:5px}
+  .guide-body table{width:100%;border-collapse:collapse;margin:0 0 10px;font-size:12.5px}
+  .guide-body th,.guide-body td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+  .guide-body th{background:var(--bg);white-space:nowrap;width:4.5em}
+  .guide-body .note{color:var(--muted);font-size:12px}
 </style>
 </head>
 <body>
@@ -217,6 +231,50 @@
   <div class="disclaimer">
     ⚠️ <b>これは個人が自分のために作った「釣れそう度」の目安ツールです。</b>魚が釣れるかは当日のベイト・地形・運の要素も大きく、判定はあくまで参考です。海に<b>出られるか</b>の安全判断は、必ず「出艇判断チェック」や現地確認と合わせて<b>自己責任</b>で行ってください。
   </div>
+
+  <details class="guide">
+    <summary>使い方と、判定の仕組み</summary>
+    <div class="guide-body">
+
+      <h3>使い方（3ステップ）</h3>
+      <ol>
+        <li><b>「📍 現在地」を押す</b>。その場所の水温・潮・天気を自動で取得します（位置情報は端末の中だけで使い、どこにも送信しません）。</li>
+        <li><b>日付を選ぶ</b>。今日・明日・明後日の3日分が見られます。</li>
+        <li><b>魚種のカードを見る</b>。◎○△×で「釣れそう度」が出ます。カードの中の横並びの表は、1時間ごとのスコアです。</li>
+      </ol>
+
+      <h3>◎○△× の意味</h3>
+      <table>
+        <tr><th>◎</th><td>条件がよく噛み合っている。狙う価値が高い</td></tr>
+        <tr><th>○</th><td>悪くない。時間帯を選べば十分ねらえる</td></tr>
+        <tr><th>△</th><td>厳しめ。狙うなら一番いい時間帯に絞りたい</td></tr>
+        <tr><th>×</th><td>季節・水温が大きく外れている。別の魚を狙った方が早い</td></tr>
+      </table>
+
+      <h3>何を見て判定しているか</h3>
+      <ul>
+        <li><b>水温</b>……魚種ごとに得意な水温帯があります。ここが一番効きます</li>
+        <li><b>季節</b>……月ごとの「旬」。産卵や回遊のタイミング</li>
+        <li><b>潮</b>……潮回りと、その時間に潮が動いているか（止まっている時間は点が下がります）</li>
+        <li><b>時合</b>……日の出・日の入りを基準にした朝夕マズメ。夜行性の魚は夜に点が上がります</li>
+        <li><b>天気・気圧</b>……荒天前の低気圧、雨後の濁りなど</li>
+      </ul>
+      <p class="note">これらを魚種ごとに重み付けして合計し、100点満点で採点しています。判定の中身は、釣りの本や記事で語られてきた通説をもとにした「ルール」です。</p>
+
+      <h3>なぜ1時間ごとに出すのか</h3>
+      <p>釣りの情報は「朝マズメが一番」で終わりがちです。でも、<b>その時間に行けない人</b>もいます。仕事、家族の送り、事情。作者もそうです。</p>
+      <p>10時なら。13時なら。夕方なら。——<b>行ける時間の中で一番いいのはいつか</b>を知るために、0時から23時まで全部の時間に点を付けています。カードの表で、色が濃い時間帯ほど期待値が高く、枠が付いているのがその日のピークです。</p>
+
+      <h3>正直な注意</h3>
+      <p>これは<b>個人が自分のために作った目安</b>です。当日のベイトの有無、地形、潮の濁り、そして運——数字にできない要素の方が、実際には大きく効きます。</p>
+      <p><b>◎でも釣れない日はありますし、×で釣れることもあります。</b>「今日はどの魚を狙うか」「何時に入るか」の作戦を立てる材料、くらいに使ってください。</p>
+      <p>海に<b>出られるかどうか</b>の安全判断は、このツールでは行いません。かならず「出艇判断チェック」と、現地でご自身の目で確かめる方を優先してください。</p>
+
+      <h3>データの出どころ</h3>
+      <p>水温・波・風・天気は Open-Meteo、潮汐は tide736.net（気象庁の潮位表をもとに算出）から取得しています。日本全国どこでも使えます。</p>
+
+    </div>
+  </details>
 
   <nav class="relnav">
     <span class="cap">姉妹ツール・ブログ</span>
