@@ -85,6 +85,7 @@
   .env-cell .k{font-size:11px;color:var(--muted)}
   .env-cell .v{font-size:15px;font-weight:700}
   .env-cell .v small{font-size:11px;font-weight:500;color:var(--muted)}
+  .env-cell .sub{font-size:11px;color:var(--muted);line-height:1.3}
   .sst .v{color:var(--sea)}
   .safety{margin-top:11px;font-size:12px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:10px}
   .safety .pill{font-size:11px;font-weight:800;color:#fff;border-radius:7px;padding:3px 9px;letter-spacing:.03em}
@@ -253,13 +254,19 @@
 
       <h3>何を見て判定しているか</h3>
       <ul>
-        <li><b>水温</b>……魚種ごとに得意な水温帯があります。ここが一番効きます</li>
+        <li><b>水温</b>……魚種ごとに得意な水温帯があります。ここが一番効きます（下の「夏の水温」も読んでください）</li>
         <li><b>季節</b>……月ごとの「旬」。産卵や回遊のタイミング</li>
         <li><b>潮</b>……潮回りと、その時間に潮が動いているか（止まっている時間は点が下がります）</li>
         <li><b>時合</b>……日の出・日の入りを基準にした朝夕マズメ。夜行性の魚は夜に点が上がります</li>
         <li><b>天気・気圧</b>……荒天前の低気圧、雨後の濁りなど</li>
       </ul>
       <p class="note">これらを魚種ごとに重み付けして合計し、100点満点で採点しています。判定の中身は、釣りの本や記事で語られてきた通説をもとにした「ルール」です。</p>
+
+      <h3>夏の水温——表面と、底は違う</h3>
+      <p>予報で取れる水温は<b>海の「表面」の温度</b>です。ところが夏は、日射で表面の数十cmだけが極端に温まり、その下に冷たい層が残ります（<b>水温躍層</b>）。表面が28℃でも、水深20〜30mは23℃くらい、ということが普通に起きます。</p>
+      <p>そのため、表面の水温をそのまま当てはめると、<b>底にいる魚が夏じゅうずっと「×」になってしまいます</b>。実際にはキジハタの一番いい季節なのに、です。</p>
+      <p>そこでこのツールは、<b>魚がふだんいる層（表層・中層・底）ごとに水温を推定し直して</b>から判定しています。表層を回る青物には補正をかけず、底の根魚には丸ごとかける、という具合です。海況欄に「底は約◯℃と推定」と出るのがその値です。</p>
+      <p class="note">補正の幅は月ごとの目安（夏に最大、冬はゼロ）で、実測ではありません。海の状況によってはもっと差が大きいことも、小さいこともあります。</p>
 
       <h3>なぜ1時間ごとに出すのか</h3>
       <p>釣りの情報は「朝マズメが一番」で終わりがちです。でも、<b>その時間に行けない人</b>もいます。仕事、家族の送り、事情。作者もそうです。</p>
@@ -307,7 +314,8 @@ const WMO={0:'快晴',1:'晴れ',2:'薄曇り',3:'曇り',45:'霧',48:'霧',51:'
   95:'雷雨',96:'雷雨',99:'雷雨'};
 
 //=================== 魚種プロファイル（ここを直せば判定を調整できます） ===================
-// temp: 適水温[ideal下,上] / 許容[ok下,上]（℃）
+// temp: 適水温[ideal下,上] / 許容[ok下,上]（℃）※「その魚がいる層の水温」で書く（表面水温ではない）
+// depth: 主に居る層 'surface'=表層 / 'mid'=中層 / 'bottom'=底（夏の表層補正の効き方が変わる）
 // season: 月ごとの旬スコア(0〜1)
 // tideType: 潮回りの好み（大潮/中潮/小潮）
 // clarity: 'clear'=澄み好み / 'sasa'=ササ濁り好み / 'any'=気にしない
@@ -315,6 +323,7 @@ const WMO={0:'快晴',1:'晴れ',2:'薄曇り',3:'曇り',45:'霧',48:'霧',51:'
 const SPECIES = [
   { id:'aori', name:'アオリイカ', emoji:'🦑',
     temp:{ideal:[19,24], ok:[15,27]},
+    depth:'mid',
     season:{1:.2,2:.2,3:.6,4:1,5:1,6:.9,7:.4,8:.5,9:.9,10:1,11:1,12:.4},
     tideType:{big:.8, mid:1, small:.6}, clarity:'clear',
     time:{morning:1, day:.4, evening:1, night:.75},
@@ -323,6 +332,7 @@ const SPECIES = [
   },
   { id:'buri', name:'青物', emoji:'🐟',
     temp:{ideal:[15,21], ok:[12,25]},
+    depth:'surface',
     season:{1:.3,2:.2,3:.3,4:.5,5:.6,6:.6,7:.5,8:.5,9:.8,10:1,11:1,12:.7},
     tideType:{big:1, mid:.8, small:.4}, clarity:'any',
     time:{morning:1, day:.4, evening:.7, night:.3},
@@ -331,6 +341,7 @@ const SPECIES = [
   },
   { id:'hata', name:'根魚（キジハタ・カサゴ）', emoji:'🐡',
     temp:{ideal:[18,26], ok:[10,29]},
+    depth:'bottom',
     season:{1:.4,2:.4,3:.5,4:.6,5:.7,6:.9,7:1,8:1,9:1,10:.9,11:.6,12:.5},
     tideType:{big:.9, mid:1, small:.7}, clarity:'any',
     time:{morning:.9, day:.5, evening:1, night:1},
@@ -339,6 +350,7 @@ const SPECIES = [
   },
   { id:'flat', name:'フラット（ヒラメ・マゴチ）', emoji:'🐠',
     temp:{ideal:[16,23], ok:[12,27]},
+    depth:'bottom',
     season:{1:.4,2:.4,3:.6,4:.7,5:.6,6:.7,7:.8,8:.8,9:.9,10:1,11:.9,12:.6},
     tideType:{big:.9, mid:1, small:.6}, clarity:'sasa',
     time:{morning:1, day:.5, evening:.9, night:.4},
@@ -347,6 +359,7 @@ const SPECIES = [
   },
   { id:'aji', name:'アジ', emoji:'🎏',
     temp:{ideal:[18,24], ok:[14,27]},
+    depth:'mid',
     season:{1:.3,2:.3,3:.4,4:.5,5:.6,6:.7,7:.9,8:1,9:1,10:1,11:.8,12:.4},
     tideType:{big:.9, mid:1, small:.6}, clarity:'any',
     time:{morning:1, day:.5, evening:1, night:1},
@@ -355,6 +368,7 @@ const SPECIES = [
   },
   { id:'kisu', name:'キス（シロギス）', emoji:'🏖️',
     temp:{ideal:[20,25], ok:[16,28]},
+    depth:'mid',
     season:{1:.2,2:.2,3:.3,4:.5,5:.7,6:.9,7:1,8:1,9:.9,10:.6,11:.4,12:.2},
     tideType:{big:.8, mid:1, small:.7}, clarity:'any',
     time:{morning:.8, day:.9, evening:.8, night:.3},
@@ -363,6 +377,7 @@ const SPECIES = [
   },
   { id:'tachi', name:'タチウオ', emoji:'🗡️',
     temp:{ideal:[20,27], ok:[16,29]},
+    depth:'mid',
     season:{1:.2,2:.2,3:.2,4:.3,5:.4,6:.5,7:.7,8:1,9:1,10:1,11:.7,12:.4},
     tideType:{big:.9, mid:1, small:.6}, clarity:'any',
     time:{morning:1, day:.3, evening:1, night:1},
@@ -371,6 +386,7 @@ const SPECIES = [
   },
   { id:'madai', name:'マダイ（真鯛）', emoji:'🌸',
     temp:{ideal:[15,23], ok:[12,26]},
+    depth:'bottom',
     season:{1:.4,2:.4,3:.6,4:.9,5:1,6:.7,7:.6,8:.6,9:.8,10:1,11:.9,12:.5},
     tideType:{big:1, mid:.9, small:.5}, clarity:'any',
     time:{morning:1, day:.6, evening:.9, night:.4},
@@ -379,6 +395,7 @@ const SPECIES = [
   },
   { id:'suzuki', name:'スズキ（シーバス）', emoji:'🌊',
     temp:{ideal:[14,24], ok:[8,27]},
+    depth:'surface',
     season:{1:.5,2:.5,3:.6,4:.7,5:.7,6:.7,7:.7,8:.7,9:.8,10:.9,11:.8,12:.6},
     tideType:{big:.9, mid:1, small:.6}, clarity:'sasa',
     time:{morning:1, day:.4, evening:1, night:.9},
@@ -387,6 +404,7 @@ const SPECIES = [
   },
   { id:'chinu', name:'クロダイ（チヌ）', emoji:'🖤',
     temp:{ideal:[16,26], ok:[12,29]},
+    depth:'surface',
     season:{1:.4,2:.4,3:.6,4:.8,5:.9,6:.9,7:.8,8:.8,9:.8,10:.7,11:.5,12:.4},
     tideType:{big:.8, mid:1, small:.7}, clarity:'any',
     time:{morning:.9, day:.7, evening:.9, night:.6},
@@ -395,6 +413,7 @@ const SPECIES = [
   },
   { id:'kamasu', name:'カマス', emoji:'⚡',
     temp:{ideal:[18,26], ok:[15,28]},
+    depth:'surface',
     season:{1:.2,2:.2,3:.2,4:.3,5:.4,6:.4,7:.5,8:.6,9:.8,10:1,11:.9,12:.5},
     tideType:{big:.8, mid:1, small:.7}, clarity:'any',
     time:{morning:1, day:.5, evening:1, night:.6},
@@ -403,6 +422,7 @@ const SPECIES = [
   },
   { id:'mebaru', name:'メバル', emoji:'🔦',
     temp:{ideal:[12,18], ok:[8,22]},
+    depth:'surface',
     season:{1:1,2:1,3:1,4:.8,5:.6,6:.3,7:.2,8:.2,9:.3,10:.5,11:.7,12:.9},
     tideType:{big:.8, mid:1, small:.8}, clarity:'clear',
     time:{morning:.7, day:.3, evening:.9, night:1},
@@ -411,6 +431,7 @@ const SPECIES = [
   },
   { id:'kawahagi', name:'カワハギ', emoji:'🍂',
     temp:{ideal:[14,22], ok:[10,26]},
+    depth:'bottom',
     season:{1:.5,2:.4,3:.4,4:.4,5:.5,6:.5,7:.5,8:.6,9:.7,10:.9,11:1,12:.8},
     tideType:{big:.8, mid:1, small:.7}, clarity:'any',
     time:{morning:.7, day:1, evening:.7, night:.3},
@@ -419,6 +440,7 @@ const SPECIES = [
   },
   { id:'maika', name:'マイカ（ケンサキ）', emoji:'🌙',
     temp:{ideal:[18,25], ok:[15,27]},
+    depth:'mid',
     season:{1:.2,2:.2,3:.3,4:.4,5:.5,6:.8,7:1,8:1,9:.9,10:.6,11:.3,12:.2},
     tideType:{big:.8, mid:1, small:.6}, clarity:'clear',
     time:{morning:.6, day:.3, evening:.9, night:1},
@@ -563,6 +585,23 @@ function buildEnv(data, dayOffset){
     dayCode,sunrise,sunset,precDay,presMin,thunder,tideDay,safety};
 }
 
+//=================== 水温の層補正（サーモクライン） ===================
+// 夏は日射で海の「表面」だけが熱くなり、下の層とのあいだに水温躍層ができる。
+// APIから取れるのは表面水温(SST)だけなので、そのまま使うと底を釣る魚が夏に不当に×になる。
+// 月ごとの「表面と下の層の温度差」を引いて、その魚がいる層の水温を推定する。
+// 冬は海が上下に混ざるので差はほぼゼロ。
+const STRATIFICATION = {1:0, 2:0, 3:.5, 4:1, 5:2, 6:3.5, 7:5, 8:6, 9:4.5, 10:2.5, 11:1, 12:.5};
+// 層ごとの補正の効き（0=表面水温そのまま / 1=温度差を丸ごと引く）
+const DEPTH_FACTOR = {surface:0, mid:.5, bottom:1};
+const DEPTH_LABEL  = {surface:'表層', mid:'中層', bottom:'底'};
+
+// その魚種が主に居る層の推定水温（℃）
+function waterTempFor(env, sp){
+  if(env.sstAvg==null) return null;
+  const d = DEPTH_FACTOR[sp.depth] ?? .5;
+  return env.sstAvg - (STRATIFICATION[env.month] ?? 0) * d;
+}
+
 //=================== 魚種スコアリング ===================
 function tempScore(t, sp){
   if(t==null) return .55;
@@ -613,7 +652,8 @@ function pickRep(hourly, scope, sr, ss, nowHour){
 }
 // 1時間刻みで釣れそう度(0〜1)を全時間帯ぶん計算し、スコープに沿った代表ピークを拾う
 function scoreSpecies(env, sp, scope, nowHour){
-  const tS=tempScore(env.sstAvg, sp);
+  const wt=waterTempFor(env, sp);                  // その魚が居る層の推定水温
+  const tS=tempScore(wt, sp);
   const seaS=sp.season[env.month]??.4;
   const wS=weatherScore(env, sp);
   const type=env.tideDay?env.tideDay.type:'mid';
@@ -632,7 +672,7 @@ function scoreSpecies(env, sp, scope, nowHour){
   }
   const peak = pickRep(hourly, scope||'day', sr, ss, nowHour);
   return {sp, score:peak.score, peak, hourly,
-    f:{temp:tS,season:seaS,tide:peak.tideF,time:peak.timeF,weather:wS,type}, env};
+    f:{temp:tS,season:seaS,tide:peak.tideF,time:peak.timeF,weather:wS,type,wt}, env};
 }
 function gradeCls(pct){ return pct>=75?'A':pct>=58?'B':pct>=42?'C':'D'; }
 
@@ -700,11 +740,16 @@ function reasonText(r){
   const env=r.env, sp=r.sp, f=r.f;
   const parts=[];
   // 水温
-  const t=env.sstAvg;
+  const t=f.wt;
+  // 表面水温から層の補正が効いている時は、その旨がわかるように書く
+  const corrected = t!=null && env.sstAvg!=null && Math.abs(env.sstAvg-t)>=.5;
+  const tTxt = t==null ? '' : corrected
+    ? `${DEPTH_LABEL[sp.depth]||''}の推定水温${t.toFixed(1)}℃（表面${env.sstAvg.toFixed(1)}℃）`
+    : `水温${t.toFixed(1)}℃`;
   if(t==null) parts.push('水温データなし');
-  else if(f.temp>=.85) parts.push(`<span class="hi">水温${t.toFixed(1)}℃は適水温ど真ん中</span>`);
-  else if(f.temp>=.5) parts.push(`水温${t.toFixed(1)}℃はまずまず`);
-  else parts.push(`<span class="lo">水温${t.toFixed(1)}℃は適温から外れて渋い</span>`);
+  else if(f.temp>=.85) parts.push(`<span class="hi">${tTxt}は適水温ど真ん中</span>`);
+  else if(f.temp>=.5) parts.push(`${tTxt}はまずまず`);
+  else parts.push(`<span class="lo">${tTxt}は適温から外れて渋い</span>`);
   // 季節
   if(f.season>=.9) parts.push('今が旬');
   else if(f.season<=.35) parts.push('<span class="lo">季節的にはオフ</span>');
@@ -729,6 +774,10 @@ function factorChips(r){
 //=================== 描画 ===================
 function renderEnv(env){
   const sst = env.sstAvg!=null? `${env.sstAvg.toFixed(1)}<small> ℃</small>` : '<small>取得不可</small>';
+  // 夏は表面だけが熱い。底の推定水温を併記して、判定の根拠が見えるようにする
+  const strat = STRATIFICATION[env.month] ?? 0;
+  const sstSub = (env.sstAvg!=null && strat>=1)
+    ? `<span class="sub">表面の値です／底は約${(env.sstAvg-strat).toFixed(1)}℃と推定</span>` : '';
   const wxTxt = env.dayCode!=null? (WMO[env.dayCode]||'—') : '—';
   const windTxt = `${env.maxWind.toFixed(1)}<small> m/s</small>` + (env.windDir!=null?` <small>${dirText(env.windDir)}</small>`:'');
   const waveTxt = env.anyWave? `${env.maxWave.toFixed(1)}<small> m</small>` : '<small>—</small>';
@@ -738,7 +787,7 @@ function renderEnv(env){
   return `<div class="env">
     <h2>🌊 ${mdjp(env.dateStr)}（${weekdayOf(env.dateStr)}）の海況${FETCHED_AT?`<small class="stamp">${FETCHED_AT}時点</small>`:''}</h2>
     <div class="env-grid">
-      <div class="env-cell sst"><span class="k">水温（日中平均）</span><span class="v">${sst}</span></div>
+      <div class="env-cell sst"><span class="k">水温（日中平均）</span><span class="v">${sst}</span>${sstSub}</div>
       <div class="env-cell"><span class="k">天気</span><span class="v">${wxTxt}</span></div>
       <div class="env-cell"><span class="k">潮回り</span><span class="v">${tideTxt}</span></div>
       <div class="env-cell"><span class="k">日の出／日の入</span><span class="v">${sun}</span></div>

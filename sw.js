@@ -1,7 +1,7 @@
 // カヤック釣果予報 サービスワーカー：アプリの外枠をキャッシュし、電波の弱い出艇地点でも起動できるようにする。
 // アプリを更新したら CACHE の番号を上げる（古いキャッシュを破棄するため）。
 // ※予報データ(Open-Meteo/tide736)は別オリジンなのでキャッシュせず、常に最新をネットから取る。
-const CACHE = "fish-forecast-v1";
+const CACHE = "fish-forecast-v2";
 const ASSETS = [
   "./", "./index.html", "./manifest.webmanifest", "./stations.js",
   "./icon-192.png", "./icon-512.png", "./icon-180.png",
