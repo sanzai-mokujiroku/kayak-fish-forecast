@@ -5,13 +5,13 @@
 <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>カヤック釣果予報｜水温・潮・天気で魚種別の釣れそう度を判定（現在地対応）</title>
-<meta name="description" content="現在地の水温・潮・天気から、狙いの魚種が釣れそうかを◎○△×で判定する無料ツール。15魚種・時間帯別スコア。全国対応（富山湾ほか）。">
+<meta name="description" content="現在地の水温・潮・天気から、狙いの魚種が釣れそうかを◎○△×で判定する無料ツール。16魚種・時間帯別スコア。全国対応（富山湾ほか）。">
 <link rel="canonical" href="https://sanzai-mokujiroku.github.io/kayak-fish-forecast/">
 <!-- OGP（SNS共有時の見え方） -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="カヤック釣果予報">
 <meta property="og:title" content="カヤック釣果予報｜水温・潮・天気で魚種別の釣れそう度を判定">
-<meta property="og:description" content="現在地の水温・潮・天気から、狙いの魚種が釣れそうかを◎○△×で判定する無料ツール。15魚種・時間帯別スコア。全国対応。">
+<meta property="og:description" content="現在地の水温・潮・天気から、狙いの魚種が釣れそうかを◎○△×で判定する無料ツール。16魚種・時間帯別スコア。全国対応。">
 <meta property="og:url" content="https://sanzai-mokujiroku.github.io/kayak-fish-forecast/">
 <meta property="og:image" content="https://sanzai-mokujiroku.github.io/kayak-fish-forecast/icon-512.png">
 <meta property="og:locale" content="ja_JP">
@@ -32,7 +32,7 @@
   "@type": "WebApplication",
   "name": "カヤック釣果予報",
   "url": "https://sanzai-mokujiroku.github.io/kayak-fish-forecast/",
-  "description": "現在地の水温・潮・天気から、狙いの魚種が釣れそうかを◎○△×で判定する無料ツール。15魚種・時間帯別スコア。全国対応。",
+  "description": "現在地の水温・潮・天気から、狙いの魚種が釣れそうかを◎○△×で判定する無料ツール。16魚種・時間帯別スコア。全国対応。",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Web",
   "inLanguage": "ja",
@@ -331,14 +331,23 @@ const SPECIES = [
     weight:{temp:.38, season:.24, tide:.18, time:.14, weather:.06},
     tips:'澄んだ潮＆朝夕マズメが鍵。春は大型の親イカ、秋は数釣りの新子。'
   },
-  { id:'buri', name:'青物', emoji:'🐟',
+  { id:'buri', name:'青物（ブリ・ガンド）', emoji:'🐟',
     temp:{ideal:[15,21], ok:[12,25]},
     depth:'surface',
     season:{1:.3,2:.2,3:.3,4:.5,5:.6,6:.6,7:.5,8:.5,9:.8,10:1,11:1,12:.7},
     tideType:{big:1, mid:.8, small:.4}, clarity:'any',
     time:{morning:1, day:.4, evening:.7, night:.3},
     weight:{temp:.28, season:.24, tide:.22, time:.18, weather:.08},
-    tips:'ブリ・サワラ・サゴシなどの回遊魚。朝マズメ＆大潮が最強、ベイトの回遊次第で爆発する。'
+    tips:'大型の回遊魚。朝マズメ＆大潮が最強。水温が下がるほど大きい群れが入る。小型が釣れる時期は「小型青物」を見ること。'
+  },
+  { id:'kobuRI', name:'小型青物（ツバイソ・サゴシ）', emoji:'🐠',
+    temp:{ideal:[19,26], ok:[15,28]},
+    depth:'surface',
+    season:{1:.2,2:.2,3:.3,4:.5,5:.7,6:.8,7:.9,8:.9,9:1,10:1,11:.9,12:.5},
+    tideType:{big:1, mid:.9, small:.6}, clarity:'any',
+    time:{morning:1, day:.6, evening:.9, night:.3},
+    weight:{temp:.26, season:.26, tide:.2, time:.2, weather:.08},
+    tips:'ブリの若魚（ツバイソ・フクラギ）やサゴシ。高い水温でも接岸し、夏〜秋に数が出る。ジグは軽め、群れに当たれば連発。'
   },
   { id:'hata', name:'根魚（キジハタ・カサゴ）', emoji:'🐡',
     temp:{ideal:[18,26], ok:[10,29]},
@@ -695,7 +704,8 @@ const TRIPS_KEY = 'kayak-fishing-trips';
 // 予報の魚種ID → 釣行ログで使われそうな魚種名・地方名（部分一致でヒット扱い）
 const LOG_ALIASES = {
   aori:['アオリ'],
-  buri:['ブリ','ワラサ','ハマチ','イナダ','ツバス','フクラギ','ガンド','コズクラ','メジロ','ヒラマサ','サワラ','サゴシ','青物'],
+  buri:['ブリ','ワラサ','ハマチ','メジロ','ガンド','ヒラマサ'],
+  kobuRI:['ツバイソ','コズクラ','フクラギ','イナダ','ツバス','サゴシ','サワラ','小型青物','青物'],
   hata:['キジハタ','アコウ','カサゴ','ガシラ','アラカブ','ソイ','アイナメ','根魚','ロック'],
   flat:['ヒラメ','マゴチ','コチ','座布団'],
   aji:['アジ','マアジ'],
