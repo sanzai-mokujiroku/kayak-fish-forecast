@@ -159,6 +159,11 @@
   .scopes button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--muted);
     border-radius:10px;padding:7px 4px;font-size:12.5px;font-weight:700;cursor:pointer}
   .scopes button.active{background:var(--sea);color:#fff;border-color:var(--sea)}
+  .myhours{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:-8px 0 14px}
+  .myhours select{border:1px solid var(--line);background:var(--card);color:var(--fg);
+    border-radius:8px;padding:5px 6px;font-size:12.5px;font-weight:700}
+  .myh-sep{font-size:12px;color:var(--muted)}
+  .myh-note{flex:1 0 100%;font-size:11px;color:var(--muted)}
   .env h2 .stamp{font-weight:500;color:var(--muted);font-size:11px;margin-left:6px}
   /* トップ3サマリー */
   .top3{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:11px 13px;margin-bottom:14px;
@@ -223,6 +228,14 @@
     <button data-scope="now">今から</button>
     <button data-scope="day" class="active">日中</button>
     <button data-scope="all">終日</button>
+    <button data-scope="my">マイ時間</button>
+  </div>
+  <div class="myhours" id="myhours" hidden>
+    <span class="scopes-cap">行ける時間</span>
+    <select id="myFrom"></select>
+    <span class="myh-sep">〜</span>
+    <select id="myTo"></select>
+    <span class="myh-note">この時間帯の中で一番いい点数を出します（次回も覚えています）</span>
   </div>
 
   <div id="content">
@@ -243,6 +256,7 @@
         <li><b>日付を選ぶ</b>。今日・明日・明後日の3日分が見られます。</li>
         <li><b>魚種のカードを見る</b>。◎○△×で「釣れそう度」が出ます。カードの中の横並びの表は、1時間ごとのスコアです。</li>
       </ol>
+      <p class="note"><b>「見せ方」の<u>マイ時間</u>が便利です。</b>自分が海に出られる時間（例：9時〜12時）を選ぶと、<b>その時間帯の中で一番いい点数</b>で並べ替えます。朝マズメや夕マズメに行けない人は、ピークの点数を見ても意味がありません。設定はこの端末に保存され、次に開いたときも残ります。</p>
 
       <h3>◎○△× の意味</h3>
       <table>
@@ -293,7 +307,7 @@
   <p class="credit">
     気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
     潮汐データ：<a href="https://tide736.net/" target="_blank" rel="noopener">tide736.net</a>（気象庁 潮位表をもとに算出）<br>
-    <span style="opacity:.7">版 2026-07-17 v7（見せ方切替・現在時刻・トップ3・オフライン対応）</span>
+    <span style="opacity:.7">版 2026-10-09 v8（マイ時間・小型青物追加・トップ3・オフライン対応）</span>
   </p>
 </div>
 
@@ -664,6 +678,7 @@ function pickRep(hourly, scope, sr, ss, nowHour){
   const inScope = (c)=>{
     if(scope==='all') return true;
     if(scope==='now') return isDay(c.h) && (nowHour==null || c.h>=nowHour);
+    if(scope==='my') return c.h>=MY_FROM && c.h<=MY_TO;   // 本人が行ける時間帯
     return isDay(c.h); // day
   };
   let rep=null;
@@ -876,7 +891,7 @@ function renderTide(env){
   return `<div class="tide-row"><p class="k">潮汐（${escapeHtml(STATION?STATION.name:'')}）</p><div class="tide-line">${hi}${lo}</div></div>`;
 }
 function renderTop3(results, scope){
-  const scopeLbl={now:'今から',day:'日中',all:'終日'}[scope]||'';
+  const scopeLbl = scope==='my' ? `${MY_FROM}〜${MY_TO}時` : ({now:'今から',day:'日中',all:'終日'}[scope]||'');
   const chips=results.slice(0,3).map(r=>{
     const g=grade(r.score); const pct=Math.round(r.score*100);
     const nm=r.sp.name.replace(/（.*/,'');
@@ -905,6 +920,17 @@ function renderDay(off){
 
 //=================== 状態・実行 ===================
 let LOC=null, STATION=null, DATA=null, CURRENT_OFF=0, SCOPE='day', FETCHED_AT='';
+// 「マイ時間」＝自分が海に出られる時間帯（localStorageに保存）
+const MYH_KEY='fishforecast_myhours';
+let MY_FROM=6, MY_TO=18;
+function loadMyHours(){
+  try{ const v=JSON.parse(localStorage.getItem(MYH_KEY)||'null');
+       if(v && Number.isInteger(v.from) && Number.isInteger(v.to)){ MY_FROM=v.from; MY_TO=v.to; } }catch(e){}
+}
+function saveMyHours(){ try{ localStorage.setItem(MYH_KEY, JSON.stringify({from:MY_FROM,to:MY_TO})); }catch(e){} }
+const SCOPE_KEY='fishforecast_scope';
+function loadScope(){ try{ const v=localStorage.getItem(SCOPE_KEY); if(v && ['now','day','all','my'].includes(v)) SCOPE=v; }catch(e){} }
+function saveScope(){ try{ localStorage.setItem(SCOPE_KEY, SCOPE); }catch(e){} }
 
 function setTabLabels(){
   for(let off=0;off<3;off++){ document.getElementById('lab'+off).textContent=mdLabel(jstDateParts(off).str); }
@@ -959,13 +985,30 @@ function fallback(msg){
 (function init(){
   setTabLabels();
   document.querySelectorAll('#tabs button').forEach(b=>{ b.addEventListener('click',()=>showDay(+b.dataset.off)); });
+  loadMyHours(); loadScope();
+  const selFrom=document.getElementById('myFrom'), selTo=document.getElementById('myTo');
+  for(let h=0;h<=23;h++){
+    selFrom.insertAdjacentHTML('beforeend',`<option value="${h}">${h}時</option>`);
+    selTo.insertAdjacentHTML('beforeend',`<option value="${h}">${h}時</option>`);
+  }
+  selFrom.value=String(MY_FROM); selTo.value=String(MY_TO);
+  function syncMyHours(){
+    MY_FROM=+selFrom.value; MY_TO=+selTo.value;
+    if(MY_TO<MY_FROM){ MY_TO=MY_FROM; selTo.value=String(MY_TO); }  // 逆転したら合わせる
+    saveMyHours(); renderDay(CURRENT_OFF);
+  }
+  selFrom.addEventListener('change',syncMyHours);
+  selTo.addEventListener('change',syncMyHours);
   document.querySelectorAll('#scopes button').forEach(b=>{
     b.addEventListener('click',()=>{
-      SCOPE=b.dataset.scope;
+      SCOPE=b.dataset.scope; saveScope();
       document.querySelectorAll('#scopes button').forEach(x=>x.classList.toggle('active',x===b));
+      document.getElementById('myhours').hidden = (SCOPE!=='my');
       renderDay(CURRENT_OFF);
     });
   });
+  document.querySelectorAll('#scopes button').forEach(x=>x.classList.toggle('active', x.dataset.scope===SCOPE));
+  document.getElementById('myhours').hidden = (SCOPE!=='my');
   document.getElementById('refreshBtn').addEventListener('click',()=>{ if(LOC) load(LOC.lat,LOC.lon,'現在地'); else locateAndLoad(); });
   document.getElementById('locBtn').addEventListener('click',locateAndLoad);
   locateAndLoad();
