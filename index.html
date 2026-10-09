@@ -140,6 +140,11 @@
   .logbanner b{color:var(--sea)}
   .logbanner a{color:var(--sea);font-weight:700;text-decoration:none}
   .tips{font-size:11.5px;color:var(--muted);margin-top:11px;line-height:1.5;background:var(--bg);border-radius:9px;padding:8px 10px}
+  .tackle{font-size:11.5px;color:var(--muted);margin-top:7px;line-height:1.5;background:var(--bg);border-radius:9px;padding:8px 10px}
+  .tackle b{color:var(--fg)}
+  .sharebar{display:flex;gap:8px;margin:14px 0 0}
+  .sharebar button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--sea);
+    border-radius:10px;padding:9px 6px;font-size:12.5px;font-weight:800;cursor:pointer}
 
   .tide-row{padding:12px 15px;background:var(--card);border:1px solid var(--line);border-radius:16px;font-size:13px;margin-bottom:14px}
   .tide-row .k{font-size:11px;color:var(--muted);margin:0 0 5px}
@@ -256,6 +261,7 @@
         <li><b>日付を選ぶ</b>。今日・明日・明後日の3日分が見られます。</li>
         <li><b>魚種のカードを見る</b>。◎○△×で「釣れそう度」が出ます。カードの中の横並びの表は、1時間ごとのスコアです。</li>
       </ol>
+      <p class="note">カードの下に出る<b>🎣道具の目安</b>は、その魚をカヤックから狙うときの目安です（ジグの重さ・ラインの太さなど）。手持ちの道具で狙えるかの判断に使ってください。あくまで一般的な目安で、場所や水深で変わります。</p>
       <p class="note"><b>「見せ方」の<u>マイ時間</u>が便利です。</b>自分が海に出られる時間（例：9時〜12時）を選ぶと、<b>その時間帯の中で一番いい点数</b>で並べ替えます。朝マズメや夕マズメに行けない人は、ピークの点数を見ても意味がありません。設定はこの端末に保存され、次に開いたときも残ります。</p>
 
       <h3>◎○△× の意味</h3>
@@ -307,7 +313,7 @@
   <p class="credit">
     気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
     潮汐データ：<a href="https://tide736.net/" target="_blank" rel="noopener">tide736.net</a>（気象庁 潮位表をもとに算出）<br>
-    <span style="opacity:.7">版 2026-10-09 v8（マイ時間・小型青物追加・トップ3・オフライン対応）</span>
+    <span style="opacity:.7">版 2026-10-09 v9（マイ時間・小型青物・道具の目安・コピー共有）</span>
   </p>
 </div>
 
@@ -343,6 +349,7 @@ const SPECIES = [
     tideType:{big:.8, mid:1, small:.6}, clarity:'clear',
     time:{morning:1, day:.4, evening:1, night:.75},
     weight:{temp:.38, season:.24, tide:.18, time:.14, weather:.06},
+    tackle:'エギ3〜3.5号。カヤックのティップランなら<b>沈むのが速い専用エギ（20〜40g）</b>。PE0.6〜0.8号＋リーダー2号前後。',
     tips:'澄んだ潮＆朝夕マズメが鍵。春は大型の親イカ、秋は数釣りの新子。'
   },
   { id:'buri', name:'青物（ブリ・ガンド）', emoji:'🐟',
@@ -352,6 +359,7 @@ const SPECIES = [
     tideType:{big:1, mid:.8, small:.4}, clarity:'any',
     time:{morning:1, day:.4, evening:.7, night:.3},
     weight:{temp:.28, season:.24, tide:.22, time:.18, weather:.08},
+    tackle:'ジグ<b>60〜150g</b>。PE1.5〜2号＋リーダー8〜10号。走るのでドラグは緩めに。',
     tips:'大型の回遊魚。朝マズメ＆大潮が最強。水温が下がるほど大きい群れが入る。小型が釣れる時期は「小型青物」を見ること。'
   },
   { id:'kobuRI', name:'小型青物（ツバイソ・サゴシ）', emoji:'🐠',
@@ -361,6 +369,7 @@ const SPECIES = [
     tideType:{big:1, mid:.9, small:.6}, clarity:'any',
     time:{morning:1, day:.6, evening:.9, night:.3},
     weight:{temp:.26, season:.26, tide:.2, time:.2, weather:.08},
+    tackle:'ジグ<b>20〜60g</b>と軽め。PE0.8〜1.5号＋リーダー5〜8号。サゴシは歯が鋭いのでリーダー太めか先糸を。',
     tips:'ブリの若魚（ツバイソ・フクラギ）やサゴシ。高い水温でも接岸し、夏〜秋に数が出る。ジグは軽め、群れに当たれば連発。'
   },
   { id:'hata', name:'根魚（キジハタ・カサゴ）', emoji:'🐡',
@@ -370,6 +379,7 @@ const SPECIES = [
     tideType:{big:.9, mid:1, small:.7}, clarity:'any',
     time:{morning:.9, day:.5, evening:1, night:1},
     weight:{temp:.3, season:.22, tide:.2, time:.2, weather:.08},
+    tackle:'ジグ<b>40〜100g</b>、またはワーム10〜30g。PE1〜1.5号＋リーダー5〜8号。根に潜られるので最初の数巻きが勝負。',
     tips:'夕マズメ＆根周りの潮が動く時。夏はキジハタ、冬でもカサゴは狙える。'
   },
   { id:'flat', name:'フラット（ヒラメ・マゴチ）', emoji:'🐠',
@@ -379,6 +389,7 @@ const SPECIES = [
     tideType:{big:.9, mid:1, small:.6}, clarity:'sasa',
     time:{morning:1, day:.5, evening:.9, night:.4},
     weight:{temp:.32, season:.22, tide:.2, time:.18, weather:.08},
+    tackle:'ジグ<b>30〜80g</b>かワーム。PE1〜1.5号＋リーダー5〜7号。底をトントン叩く。',
     tips:'ベイト接岸＆ササ濁り＆マズメ。秋春はヒラメ、夏はマゴチ。'
   },
   { id:'aji', name:'アジ', emoji:'🎏',
@@ -388,6 +399,7 @@ const SPECIES = [
     tideType:{big:.9, mid:1, small:.6}, clarity:'any',
     time:{morning:1, day:.5, evening:1, night:1},
     weight:{temp:.3, season:.25, tide:.2, time:.2, weather:.05},
+    tackle:'サビキ、またはアジング用ジグヘッド<b>1〜5g</b>。PE0.3〜0.6号＋リーダー1.5号前後。口が切れやすいので慎重に。',
     tips:'夜・常夜灯・朝夕マズメが得意。サビキやアジングで数釣り、回遊に当たれば連発。'
   },
   { id:'kisu', name:'キス（シロギス）', emoji:'🏖️',
@@ -397,6 +409,7 @@ const SPECIES = [
     tideType:{big:.8, mid:1, small:.7}, clarity:'any',
     time:{morning:.8, day:.9, evening:.8, night:.3},
     weight:{temp:.35, season:.28, tide:.17, time:.12, weather:.08},
+    tackle:'投げ・天秤仕掛けに<b>オモリ10〜25号</b>。エサはイシゴカイなど。砂地を引いて探る。',
     tips:'砂地を投げ釣りで。夏の高水温期がハイシーズン、日中でも数釣りできる貴重な魚。'
   },
   { id:'tachi', name:'タチウオ', emoji:'🗡️',
@@ -406,6 +419,7 @@ const SPECIES = [
     tideType:{big:.9, mid:1, small:.6}, clarity:'any',
     time:{morning:1, day:.3, evening:1, night:1},
     weight:{temp:.3, season:.25, tide:.2, time:.2, weather:.05},
+    tackle:'ジグ<b>40〜100g</b>かテンヤ。<b>歯で切られるのでワイヤーか太いリーダー</b>（8〜12号）。',
     tips:'夏〜秋の夕マズメ〜夜が本命。回遊に当たれば連発、指◯本のサイズ狙い。'
   },
   { id:'madai', name:'マダイ（真鯛）', emoji:'🌸',
@@ -415,6 +429,7 @@ const SPECIES = [
     tideType:{big:1, mid:.9, small:.5}, clarity:'any',
     time:{morning:1, day:.6, evening:.9, night:.4},
     weight:{temp:.3, season:.24, tide:.24, time:.15, weather:.07},
+    tackle:'鯛ラバ<b>60〜120g</b>。PE0.8〜1.2号＋リーダー3〜4号。合わせずに等速で巻き続ける。',
     tips:'鯛ラバやエサで潮を流して探る。春の乗っ込みと秋がチャンス、日中もいける。'
   },
   { id:'suzuki', name:'スズキ（シーバス）', emoji:'🌊',
@@ -424,6 +439,7 @@ const SPECIES = [
     tideType:{big:.9, mid:1, small:.6}, clarity:'sasa',
     time:{morning:1, day:.4, evening:1, night:.9},
     weight:{temp:.25, season:.2, tide:.22, time:.23, weather:.1},
+    tackle:'ミノーやジグ<b>20〜40g</b>。PE1号前後＋リーダー5号。エラ洗いに注意。',
     tips:'河口・ベイト・ササ濁りとマズメ。夜も強い。ルアーで年間通して狙える。'
   },
   { id:'chinu', name:'クロダイ（チヌ）', emoji:'🖤',
@@ -433,6 +449,7 @@ const SPECIES = [
     tideType:{big:.8, mid:1, small:.7}, clarity:'any',
     time:{morning:.9, day:.7, evening:.9, night:.6},
     weight:{temp:.3, season:.24, tide:.2, time:.16, weather:.1},
+    tackle:'チニング用<b>5〜15g</b>のジグヘッド・ラバージグ。PE0.6〜0.8号＋リーダー3号前後。',
     tips:'春の乗っ込みが最盛。チニングや落とし込みで、日中でも狙える身近な魚。'
   },
   { id:'kamasu', name:'カマス', emoji:'⚡',
@@ -442,6 +459,7 @@ const SPECIES = [
     tideType:{big:.8, mid:1, small:.7}, clarity:'any',
     time:{morning:1, day:.5, evening:1, night:.6},
     weight:{temp:.3, season:.28, tide:.16, time:.2, weather:.06},
+    tackle:'小型ジグ<b>10〜30g</b>。PE0.4〜0.8号。<b>歯が鋭いのでリーダーは太め</b>（3〜5号）。',
     tips:'秋の回遊が本番。朝夕マズメに表層を小型ルアーで。群れに当たれば入れ食い。'
   },
   { id:'mebaru', name:'メバル', emoji:'🔦',
@@ -451,6 +469,7 @@ const SPECIES = [
     tideType:{big:.8, mid:1, small:.8}, clarity:'clear',
     time:{morning:.7, day:.3, evening:.9, night:1},
     weight:{temp:.3, season:.26, tide:.16, time:.22, weather:.06},
+    tackle:'ジグヘッド<b>1〜3g</b>。PE0.3号かエステル＋リーダー1〜1.5号。スローに巻く。',
     tips:'冬〜春の夜が本命。常夜灯やスロー巻きのメバリングで。低水温期の癒し。'
   },
   { id:'kawahagi', name:'カワハギ', emoji:'🍂',
@@ -460,6 +479,7 @@ const SPECIES = [
     tideType:{big:.8, mid:1, small:.7}, clarity:'any',
     time:{morning:.7, day:1, evening:.7, night:.3},
     weight:{temp:.3, season:.26, tide:.18, time:.14, weather:.12},
+    tackle:'カワハギ仕掛け＋<b>オモリ20〜30号</b>。エサはアサリなど。小さいアタリを取る釣り。',
     tips:'砂地〜根周りをエサ釣りで。秋〜初冬は肝パン。エサ取り名人、日中の宝探し。'
   },
   { id:'maika', name:'マイカ（ケンサキ）', emoji:'🌙',
@@ -469,6 +489,7 @@ const SPECIES = [
     tideType:{big:.8, mid:1, small:.6}, clarity:'clear',
     time:{morning:.6, day:.3, evening:.9, night:1},
     weight:{temp:.32, season:.26, tide:.16, time:.2, weather:.06},
+    tackle:'エギ2.5〜3.5号、またはイカメタル<b>15〜30号</b>。PE0.4〜0.6号＋リーダー2号前後。',
     tips:'夏の夜が本番。ウキ釣りやエギで。富山湾の夏の風物詩、食味も抜群。'
   },
   // アカムツ：水深90〜200mの深場。深い層は年中ほぼ同じ水温なので、表面水温では判定しない。
@@ -480,6 +501,7 @@ const SPECIES = [
     tideType:{big:.6, mid:1, small:.9}, clarity:'any',
     time:{morning:.9, day:.8, evening:.8, night:.1},
     weight:{temp:.1, season:.4, tide:.25, time:.15, weather:.1},
+    tackle:'ジグ<b>130〜200g</b>。PE1号前後を<b>300m以上</b>。深場用（スロー系）の竿が要る。潮が速い日はさらに重く。',
     tips:'水深100〜200mの深場をスロージギングで。富山湾は岸から急に深く、カヤックでも届く範囲にあるが、重いジグと細いPEが要る。慣れるまでは経験者と一緒に。'
   }
 ];
@@ -880,6 +902,7 @@ function renderFish(r, isToday, nowHour){
       <div class="factors">${factorChips(r)}</div>
       ${renderPersonal(r)}
       <div class="tips">💡 ${escapeHtml(r.sp.tips)}</div>
+      ${r.sp.tackle?`<div class="tackle">🎣 <b>道具の目安</b>：${r.sp.tackle}</div>`:''}
     </div>
   </div>`;
 }
@@ -914,8 +937,36 @@ function renderDay(off){
   const cardsCls = env.safety==='STOP' ? ' faded' : '';
   const html = renderEnv(env) + stopNote + renderTop3(results, scope) + banner
     + `<div class="fishlist${cardsCls}">` + results.map(r=>renderFish(r,isToday,nowHour)).join('') + `</div>`
-    + renderTide(env);
+    + renderTide(env)
+    + `<div class="sharebar"><button type="button" id="shareBtn">📋 この日の狙い目をコピー（LINE等で共有）</button></div>`;
   document.getElementById('content').innerHTML=html;
+  LAST={env,results,scope};
+}
+
+//=================== 共有テキスト ===================
+let LAST=null;
+function shareText(){
+  if(!LAST) return '';
+  const {env,results,scope}=LAST;
+  const scopeLbl = scope==='my' ? `${MY_FROM}〜${MY_TO}時` : ({now:'今から',day:'日中',all:'終日'}[scope]||'');
+  const L=[];
+  L.push(`【${mdjp(env.dateStr)}（${weekdayOf(env.dateStr)}）の狙い目／${scopeLbl}】`);
+  L.push(`水温${env.sstAvg!=null?env.sstAvg.toFixed(1)+'℃':'—'}／${env.tideDay?env.tideDay.title:'潮不明'}／${env.dayCode!=null?(WMO[env.dayCode]||'—'):'—'}／風${env.maxWind.toFixed(1)}m/s・波${env.anyWave?env.maxWave.toFixed(1)+'m':'—'}（出艇目安 ${env.safety}）`);
+  results.slice(0,5).forEach((r,i)=>{
+    const g=grade(r.score);
+    L.push(`${i+1}. ${r.sp.name} ${Math.round(r.score*100)}点${g.mk}（ピーク ${r.peak?pad2(r.peak.h)+'時':'—'}）`);
+  });
+  L.push('— カヤック釣果予報 https://sanzai-mokujiroku.github.io/kayak-fish-forecast/');
+  return L.join('\n');
+}
+function pad2(n){ return String(n).padStart(2,'0'); }
+async function copyText(txt, btn){
+  try{ await navigator.clipboard.writeText(txt); }
+  catch(e){
+    const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta);
+    ta.select(); try{ document.execCommand('copy'); }catch(e2){} ta.remove();
+  }
+  if(btn){ const old=btn.textContent; btn.textContent='✅ コピーしました'; setTimeout(()=>{btn.textContent=old;},1600); }
 }
 
 //=================== 状態・実行 ===================
@@ -1009,6 +1060,10 @@ function fallback(msg){
   });
   document.querySelectorAll('#scopes button').forEach(x=>x.classList.toggle('active', x.dataset.scope===SCOPE));
   document.getElementById('myhours').hidden = (SCOPE!=='my');
+  document.getElementById('content').addEventListener('click',(ev)=>{
+    const btn=ev.target.closest('#shareBtn'); if(!btn) return;
+    const t=shareText(); if(t) copyText(t,btn);
+  });
   document.getElementById('refreshBtn').addEventListener('click',()=>{ if(LOC) load(LOC.lat,LOC.lon,'現在地'); else locateAndLoad(); });
   document.getElementById('locBtn').addEventListener('click',locateAndLoad);
   locateAndLoad();
