@@ -104,6 +104,7 @@
   .fish-main .nm{font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px}
   .fish-main .lbl{font-size:12px;color:var(--muted);margin-top:1px}
   .fish-main .lbl b{color:var(--ink);font-weight:700}
+  .fish-body{border-top:1px solid var(--line)}
   .bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin:7px 15px 0}
   .bar > i{display:block;height:100%;border-radius:99px}
   .bar.A > i{background:var(--a)} .bar.B > i{background:var(--b)} .bar.C > i{background:var(--c)} .bar.D > i{background:var(--d)}
@@ -138,7 +139,7 @@
   .logbanner{font-size:12px;color:var(--ink);line-height:1.6;
     background:#eef6ff;border:1px solid #d6e8fb;border-radius:12px;padding:11px 13px;margin-bottom:14px}
   .logbanner b{color:var(--sea)}
-  .logbanner a{color:var(--sea);font-weight:700;text-decoration:none}
+  .logbanner a{color:var(--sea);font-weight:700;text-decoration:none;display:inline-block;padding:8px 0 2px}
   .tips{font-size:11.5px;color:var(--muted);margin-top:11px;line-height:1.5;background:var(--bg);border-radius:9px;padding:8px 10px}
   .tackle{font-size:11.5px;color:var(--muted);margin-top:7px;line-height:1.5;background:var(--bg);border-radius:9px;padding:8px 10px}
   .tackle b{color:var(--fg)}
@@ -153,7 +154,7 @@
 
   .disclaimer{background:#fff;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:12px 14px;font-size:12.5px;color:var(--ink);margin:16px 0 14px;line-height:1.7}
   .disclaimer b{color:var(--stop)}
-  .credit{font-size:11px;color:var(--muted);text-align:center;line-height:1.8} .credit a{color:var(--muted)}
+  .credit{font-size:11px;color:var(--muted);text-align:center;line-height:1.8} .credit a{color:var(--muted);display:inline-block;padding:6px 2px}
   .loading,.error{text-align:center;padding:40px 16px;color:var(--muted)} .error{color:var(--stop)}
   .spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--sea);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
   @keyframes spin{to{transform:rotate(360deg)}}
@@ -187,7 +188,21 @@
   /* 出艇不可の日 */
   .stopbar{background:#fdecec;border:1px solid #f3b4b4;border-radius:12px;padding:11px 13px;margin-bottom:14px;
     font-size:12.5px;color:#8a1f1f;line-height:1.6} .stopbar b{color:var(--stop)}
-  .fishlist.faded{opacity:.5}
+  /* 出艇不可の日：薄くせず「参考」の札で示す */
+  .refmark{flex:none;white-space:nowrap;font-size:10.5px;font-weight:700;color:#8a1f1f;background:#fdecec;border:1px solid #f3b4b4;
+    border-radius:6px;padding:1px 6px;margin-left:2px}
+  .top3.ref .t3{background:var(--bg)}
+  .top3.ref .t3 .t3mk{color:var(--muted)}
+  .top3.ref .top3-cap{color:#8a1f1f}
+  /* 魚カードの折りたたみ */
+  details.fish>summary{list-style:none;cursor:pointer;padding-bottom:12px}
+  details.fish>summary::-webkit-details-marker{display:none}
+  .fish-sum{font-size:12px;color:var(--muted);margin:7px 15px 0;display:flex;justify-content:space-between;gap:8px}
+  .fish-sum .open-hint::after{content:"詳しく ＋"}
+  details.fish[open] .fish-sum .open-hint::after{content:"とじる －"}
+  .fish-sum .open-hint{color:var(--sea);font-weight:700;white-space:nowrap}
+  details.fish>summary:focus-visible{outline:2px solid var(--sea);outline-offset:-2px;border-radius:16px}
+  .myhours[hidden]{display:none}
   /* 現在時刻セル */
   .hcell.now{box-shadow:inset 0 0 0 2px var(--sea)} .hcell.now .hh{color:var(--sea);font-weight:800}
   .relnav{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:18px 0 10px}
@@ -313,7 +328,7 @@
   <p class="credit">
     気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
     潮汐データ：<a href="https://tide736.net/" target="_blank" rel="noopener">tide736.net</a>（気象庁 潮位表をもとに算出）<br>
-    <span style="opacity:.7">版 2026-10-09 v9（マイ時間・小型青物・道具の目安・コピー共有）</span>
+    <span style="opacity:.7">版 2026-10-23 v10（魚カードの折りたたみ・出艇不可の日の表示）</span>
   </p>
 </div>
 
@@ -871,8 +886,8 @@ function renderHours(r, isToday, nowHour){
     const hh=isNow?'今':`${c.h}時`;
     return `<div class="hcell ${cls}${isPeak}${isNow}"><span class="hh">${hh}</span><span class="hs">${pct}</span></div>`;
   }).join('');
-  return `<p class="hours-cap">🕒 時間帯別の釣れそう度（0〜23時・100点満点・${isToday?'<b>今</b>=現在時刻・':''}枠=狙い目 →横スクロール）</p>
-    <div class="hours-wrap"><div class="hours">${cells}</div></div>`;
+  return `<p class="hours-cap">🕒 時間帯別の釣れそう度（0〜23時・100点満点・${isToday?'<b>今</b>=現在時刻・':''}枠=狙い目 ←→横スクロール）</p>
+    <div class="hours-wrap" data-start="${r.startHour??0}"><div class="hours">${cells}</div></div>`;
 }
 function renderPersonal(r){
   if(!TRIPS.length) return '';
@@ -884,18 +899,22 @@ function renderPersonal(r){
   }
   return `<div class="personal">${s}</div>`;
 }
-function renderFish(r, isToday, nowHour){
+function renderFish(r, isToday, nowHour, isOpen, isRef){
   const g=grade(r.score);
   const pct=Math.round(clamp(r.score,0,1)*100);
-  return `<div class="fish">
+  const peakTxt = r.peak ? `ピーク ${r.peak.h}時ごろ` : '';
+  return `<details class="fish"${isOpen?' open':''}>
+    <summary>
     <div class="fish-head">
       <div class="grade ${g.k}"><span class="mk">${g.mk}</span></div>
       <div class="fish-main">
-        <div class="nm">${r.sp.emoji} ${escapeHtml(r.sp.name)}</div>
-        <div class="lbl"><b>${g.label}</b>（ピーク ${pct}点）</div>
+        <div class="nm">${r.sp.emoji} ${escapeHtml(r.sp.name)}${isRef?'<span class="refmark">参考</span>':''}</div>
+        <div class="lbl"><b>${g.label}</b>（${pct}点）</div>
       </div>
     </div>
     <div class="bar ${g.k}"><i style="width:${pct}%"></i></div>
+    <div class="fish-sum"><span>${peakTxt}</span><span class="open-hint"></span></div>
+    </summary>
     <div class="fish-body">
       <div class="reason">${reasonText(r)}</div>
       ${renderHours(r, isToday, nowHour)}
@@ -904,7 +923,7 @@ function renderFish(r, isToday, nowHour){
       <div class="tips">💡 ${escapeHtml(r.sp.tips)}</div>
       ${r.sp.tackle?`<div class="tackle">🎣 <b>道具の目安</b>：${r.sp.tackle}</div>`:''}
     </div>
-  </div>`;
+  </details>`;
 }
 function renderTide(env){
   if(!env.tideDay) return '';
@@ -913,14 +932,15 @@ function renderTide(env){
   const lo=t.ebb.map(x=>`<span class="lo">干 ${x.time.slice(0,5)} (${x.cm}cm)</span>`).join('');
   return `<div class="tide-row"><p class="k">潮汐（${escapeHtml(STATION?STATION.name:'')}）</p><div class="tide-line">${hi}${lo}</div></div>`;
 }
-function renderTop3(results, scope){
+function renderTop3(results, scope, isRef){
   const scopeLbl = scope==='my' ? `${MY_FROM}〜${MY_TO}時` : ({now:'今から',day:'日中',all:'終日'}[scope]||'');
   const chips=results.slice(0,3).map(r=>{
     const g=grade(r.score); const pct=Math.round(r.score*100);
     const nm=r.sp.name.replace(/（.*/,'');
     return `<div class="t3 ${g.k}"><span class="t3mk">${g.mk}</span><span class="t3nm">${r.sp.emoji} ${escapeHtml(nm)}</span><span class="t3pt">${pct}<small>点</small></span></div>`;
   }).join('');
-  return `<div class="top3"><div class="top3-cap">🎯 ${scopeLbl}の狙い目トップ3</div><div class="top3-row">${chips}</div></div>`;
+  const cap = isRef ? `もし出られたら：${scopeLbl}の狙い目トップ3` : `🎯 ${scopeLbl}の狙い目トップ3`;
+  return `<div class="top3${isRef?' ref':''}"><div class="top3-cap">${cap}</div><div class="top3-row">${chips}</div></div>`;
 }
 function renderDay(off){
   if(!DATA) return;
@@ -934,13 +954,27 @@ function renderDay(off){
     `<div class="logbanner">📓 <b>釣行ログ</b>に釣行を記録すると、ここに「あなたの実績（この魚が何回中何回釣れたか）」が出て、判定の答え合わせができます。<br><a href="../kayak-fishing-log/">釣行ログを開く →</a></div>`;
   const stopNote = env.safety==='STOP'
     ? `<div class="stopbar">⚠️ 本日は<b>出艇不可の予報</b>（強風・高波・雷）。下の釣れそう度は「もし出られたら」の参考です。</div>` : '';
-  const cardsCls = env.safety==='STOP' ? ' faded' : '';
-  const html = renderEnv(env) + stopNote + renderTop3(results, scope) + banner
-    + `<div class="fishlist${cardsCls}">` + results.map(r=>renderFish(r,isToday,nowHour)).join('') + `</div>`
+  const isRef = env.safety==='STOP';
+  // 時間別の帯は、選んだ見せ方の最初の時刻から見せる
+  const startHour = scope==='my' ? MY_FROM : scope==='now' ? (nowHour??0) : scope==='all' ? 0 : Math.floor(env.sunrise);
+  results.forEach(r=>{ r.startHour=startHour; });
+  const html = renderEnv(env) + stopNote + renderTop3(results, scope, isRef) + banner
+    + `<p class="hours-cap">上位3つを開いています。ほかの魚は、名前をタップすると詳しく見られます。</p>`
+    + `<div class="fishlist">` + results.map((r,i)=>renderFish(r,isToday,nowHour,i<3,isRef)).join('') + `</div>`
     + renderTide(env)
     + `<div class="sharebar"><button type="button" id="shareBtn">📋 この日の狙い目をコピー（LINE等で共有）</button></div>`;
   document.getElementById('content').innerHTML=html;
+  alignHours(document.getElementById('content'));
   LAST={env,results,scope};
+}
+
+// 時間別の帯を、見せたい時刻が左端に来るようにずらす（閉じたカードは開いたときに）
+function alignHours(root){
+  root.querySelectorAll('details.fish[open] .hours-wrap').forEach(w=>{
+    const cell=w.querySelector('.hcell'); if(!cell) return;
+    const step=cell.getBoundingClientRect().width+4;
+    w.scrollLeft=Math.max(0,(+w.dataset.start||0)*step-2);
+  });
 }
 
 //=================== 共有テキスト ===================
@@ -1060,6 +1094,9 @@ function fallback(msg){
   });
   document.querySelectorAll('#scopes button').forEach(x=>x.classList.toggle('active', x.dataset.scope===SCOPE));
   document.getElementById('myhours').hidden = (SCOPE!=='my');
+  document.getElementById('content').addEventListener('toggle',(ev)=>{
+    const d=ev.target; if(d.matches && d.matches('details.fish') && d.open) alignHours(d.parentElement);
+  },true);
   document.getElementById('content').addEventListener('click',(ev)=>{
     const btn=ev.target.closest('#shareBtn'); if(!btn) return;
     const t=shareText(); if(t) copyText(t,btn);
