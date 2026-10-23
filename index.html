@@ -19,7 +19,7 @@
 <meta name="twitter:title" content="カヤック釣果予報｜水温・潮・天気で魚種別の釣れそう度を判定">
 <meta name="twitter:description" content="現在地の水温・潮・天気から、狙いの魚種が釣れそうかを◎○△×で判定する無料ツール。全国対応。">
 <meta name="twitter:image" content="https://sanzai-mokujiroku.github.io/kayak-fish-forecast/icon-512.png">
-<meta name="theme-color" content="#0a2540">
+<meta name="theme-color" content="#0c284f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@800&display=swap&text=%C3%97%E2%96%B3%E2%97%8B%E2%97%8E%E3%82%AB%E3%82%AF%E3%83%83%E3%83%A4%E4%BA%88%E5%85%88%E5%88%80%E5%89%A3%E5%89%A5%E5%A0%B1%E5%A4%AA%E5%BC%B5%E6%9E%9C%E7%83%8F%E7%9A%AE%E7%9C%BC%E8%B3%8A%E9%87%A3%E9%AD%B3%E9%AE%83%E9%AE%8B%E9%AF%9B%E9%AF%A5%E9%AF%B5%E9%B0%86%E9%B0%A4%E9%B1%9A%E9%B1%B8%E9%BB%92">
@@ -50,6 +50,7 @@
     --bg:#f3f6f9; --card:#ffffff; --ink:#1c2733; --muted:#67778a;
     --line:#e2e8f0; --accent:#0a2540; --sea:#0a6cb3;
     --stop:#d63031;
+    --kon:#0c284f; --shu:#d9482b;   /* アプリアイコンと同じ紺と朱 */
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
@@ -72,12 +73,22 @@
   .locbtn{border:1px solid var(--line);background:var(--card);color:var(--sea);border-radius:999px;
     padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
   .locbtn:active{transform:scale(.97)}
+  /* 上部の紺の帯（アプリアイコンと同じ紺地に朱の鯛） */
+  .hero{position:relative;overflow:hidden;background:var(--kon);color:#fff;
+    margin:-16px -14px 16px;padding:18px 16px 14px;border-radius:0 0 22px 22px}
+  .hero-art{position:absolute;right:-22px;top:56px;width:168px;height:auto;pointer-events:none}
+  .hero header.top{position:relative;margin-bottom:6px}
+  .hero header.top h1{color:#fff}
+  .hero-lead{position:relative;margin:0 0 12px;min-height:66px;font-size:13px;line-height:1.6;color:#c9d6e6;max-width:58%}
+  .hero .locbar{position:relative;margin:0;color:#c9d6e6;background:#16365f;border-radius:12px;padding:8px 10px}
+  .hero .locbar .loc b{color:#fff}
+  .hero .refresh,.hero .locbtn{background:#1d4374;border-color:#3a6296;color:#fff}
   .locwarn{color:var(--stop)}
   .tabs{display:flex;gap:8px;margin:0 0 14px}
   .tabs button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--muted);
     border-radius:12px;padding:10px 4px;font-size:14px;font-weight:700;cursor:pointer;line-height:1.2}
   .tabs button small{display:block;font-size:11px;font-weight:500;margin-top:1px;color:var(--muted)}
-  .tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .tabs button.active{background:var(--kon);color:#fff;border-color:var(--kon)}
   .tabs button.active small{color:#b9c9d8}
 
   /* 環境サマリ */
@@ -138,7 +149,7 @@
   .hcell.B{background:var(--b-bg)} .hcell.B .hs{color:var(--b)}
   .hcell.C{background:var(--c-bg)} .hcell.C .hs{color:#b8820a}
   .hcell.D{background:var(--d-bg)} .hcell.D .hs{color:var(--d)}
-  .hcell.peak{border-color:var(--accent)}
+  .hcell.peak{border-color:var(--shu)}
   .personal{font-size:11.5px;color:var(--ink);margin-top:9px;line-height:1.5;
     background:#eef6ff;border:1px solid #d6e8fb;border-radius:9px;padding:7px 10px}
   .personal b{color:var(--sea)}
@@ -171,7 +182,7 @@
   .scopes-cap{font-size:11px;color:var(--muted);margin-right:2px}
   .scopes button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--muted);
     border-radius:10px;padding:7px 4px;font-size:12.5px;font-weight:700;cursor:pointer}
-  .scopes button.active{background:var(--sea);color:#fff;border-color:var(--sea)}
+  .scopes button.active{background:var(--shu);color:#fff;border-color:var(--shu)}
   .myhours{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:-8px 0 14px}
   .myhours select{border:1px solid var(--line);background:var(--card);color:var(--fg);
     border-radius:8px;padding:5px 6px;font-size:12.5px;font-weight:700}
@@ -181,7 +192,7 @@
   /* トップ3サマリー */
   .top3{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:11px 13px;margin-bottom:14px;
     box-shadow:0 1px 2px rgba(16,42,67,.04)}
-  .top3-cap{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:8px}
+  .top3-cap{font-size:12.5px;color:var(--shu);font-weight:800;margin-bottom:8px}
   .top3-row{display:flex;gap:8px}
   .t3{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;
     border-radius:12px;padding:9px 4px;background:var(--bg)}
@@ -235,14 +246,17 @@
 </head>
 <body>
 <div class="wrap">
-  <header class="top">
-    <h1>カヤック釣果予報</h1>
-    <button class="refresh" id="refreshBtn">↻ 更新</button>
-  </header>
-
-  <div class="locbar">
-    <div class="loc" id="locText">現在地を取得しています…</div>
-    <button class="locbtn" id="locBtn">📍 現在地</button>
+  <div class="hero">
+    <img class="hero-art" src="hero-tai.webp" alt="" width="320" height="207">
+    <header class="top">
+      <h1>カヤック釣果予報</h1>
+      <button class="refresh" id="refreshBtn">↻ 更新</button>
+    </header>
+    <p class="hero-lead">水温・潮・天気から、<br>今日の釣れそうな魚を。</p>
+    <div class="locbar">
+      <div class="loc" id="locText">現在地を取得しています…</div>
+      <button class="locbtn" id="locBtn">📍 現在地</button>
+    </div>
   </div>
 
   <div class="tabs" id="tabs">
@@ -337,7 +351,7 @@
   <p class="credit">
     気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
     潮汐データ：<a href="https://tide736.net/" target="_blank" rel="noopener">tide736.net</a>（気象庁 潮位表をもとに算出）<br>
-    <span style="opacity:.7">版 2026-10-23 v14（カラー魚拓・新しいアプリアイコン）</span>
+    <span style="opacity:.7">版 2026-10-23 v15（紺の帯と朱の鯛・カラー魚拓・新しいアイコン）</span>
   </p>
 </div>
 

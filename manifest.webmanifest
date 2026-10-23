@@ -4,8 +4,8 @@
   "description": "水温・潮・天気から狙いの魚種が釣れそうかを判定するツール（富山湾ほか全国対応）",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0a2540",
-  "theme_color": "#0a2540",
+  "background_color": "#0c284f",
+  "theme_color": "#0c284f",
   "icons": [
     {
       "src": "icon-192.png",
