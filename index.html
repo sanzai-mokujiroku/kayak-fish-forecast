@@ -102,10 +102,10 @@
   .fish-head{display:flex;align-items:center;gap:12px;padding:13px 15px}
   .grade{flex:none;width:52px;height:52px;border-radius:14px;display:flex;flex-direction:column;
     align-items:center;justify-content:center;color:#fff;line-height:1}
-  .grade{width:56px;height:62px;gap:2px;border-radius:10px}
-  .grade .kj{font-family:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;font-weight:800;font-size:27px;line-height:1}
-  .grade .kj.two{font-size:19px;letter-spacing:-.02em}
-  .grade .mk{font-size:12px;font-weight:800;opacity:.9;line-height:1}
+  .grade{width:46px;height:46px;border-radius:12px}
+  .grade .mk{font-size:23px;font-weight:800;line-height:1}
+  /* 魚拓（ChatGPTで作成した墨の魚。gyotaku/） */
+  .fish-head .gyo{flex:none;width:96px;height:56px;object-fit:contain;object-position:right center;margin-left:auto}
   .grade.A{background:var(--a)} .grade.B{background:var(--b)} .grade.C{background:var(--c)} .grade.D{background:var(--d)}
   .fish-main{flex:1;min-width:0}
   .fish-main .nm{font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px}
@@ -185,9 +185,8 @@
   .top3-row{display:flex;gap:8px}
   .t3{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;
     border-radius:12px;padding:9px 4px;background:var(--bg)}
-  .t3 .t3kj{font-family:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;font-weight:800;font-size:24px;line-height:1.1}
-  .t3.A .t3kj{color:var(--a)} .t3.B .t3kj{color:var(--b)} .t3.C .t3kj{color:#b8820a} .t3.D .t3kj{color:var(--d)}
-  .top3.ref .t3 .t3kj{color:var(--muted)}
+  .t3 .t3gyo{width:76px;height:40px;object-fit:contain}
+  .top3.ref .t3 .t3gyo{opacity:.55}
   .t3 .t3nm{font-size:12px;font-weight:700;text-align:center;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
   .t3 .t3pt{font-size:12px;color:var(--muted)} .t3 .t3pt small{font-size:9px}
   .t3.A{background:var(--a-bg)} .t3.A .t3mk{color:var(--a)}
@@ -338,7 +337,7 @@
   <p class="credit">
     気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
     潮汐データ：<a href="https://tide736.net/" target="_blank" rel="noopener">tide736.net</a>（気象庁 潮位表をもとに算出）<br>
-    <span style="opacity:.7">版 2026-10-23 v12（水深マップへのリンク・魚の札・折りたたみ）</span>
+    <span style="opacity:.7">版 2026-10-23 v13（魚拓アイコン・水深マップへのリンク・折りたたみ）</span>
   </p>
 </div>
 
@@ -909,9 +908,6 @@ function renderPersonal(r){
   }
   return `<div class="personal">${s}</div>`;
 }
-// 魚の札（魚へんの漢字）。絵文字の代わりに使う
-const KANJI={"aori": "烏賊", "buri": "鰤", "kobuRI": "鰆", "hata": "鮋", "flat": "鮃", "aji": "鯵", "kisu": "鱚", "tachi": "太刀", "madai": "鯛", "suzuki": "鱸", "chinu": "黒鯛", "kamasu": "魳", "mebaru": "眼張", "kawahagi": "皮剥", "maika": "剣先", "akamutsu": "鯥"};
-function kanjiOf(sp){ return KANJI[sp.id]||sp.name.slice(0,1); }
 function renderFish(r, isToday, nowHour, isOpen, isRef){
   const g=grade(r.score);
   const pct=Math.round(clamp(r.score,0,1)*100);
@@ -919,11 +915,12 @@ function renderFish(r, isToday, nowHour, isOpen, isRef){
   return `<details class="fish"${isOpen?' open':''}>
     <summary>
     <div class="fish-head">
-      <div class="grade ${g.k}"><span class="kj${kanjiOf(r.sp).length>1?' two':''}">${kanjiOf(r.sp)}</span><span class="mk">${g.mk}</span></div>
+      <div class="grade ${g.k}"><span class="mk">${g.mk}</span></div>
       <div class="fish-main">
         <div class="nm">${escapeHtml(r.sp.name)}${isRef?'<span class="refmark">参考</span>':''}</div>
         <div class="lbl"><b>${g.label}</b>（${pct}点）</div>
       </div>
+      <img class="gyo" src="gyotaku/${r.sp.id}.webp" alt="" loading="lazy" decoding="async">
     </div>
     <div class="bar ${g.k}"><i style="width:${pct}%"></i></div>
     <div class="fish-sum"><span>${peakTxt}</span><span class="open-hint"></span></div>
@@ -950,7 +947,7 @@ function renderTop3(results, scope, isRef){
   const chips=results.slice(0,3).map(r=>{
     const g=grade(r.score); const pct=Math.round(r.score*100);
     const nm=r.sp.name.replace(/（.*/,'');
-    return `<div class="t3 ${g.k}"><span class="t3kj">${kanjiOf(r.sp)}</span><span class="t3nm">${g.mk} ${escapeHtml(nm)}</span><span class="t3pt">${pct}<small>点</small></span></div>`;
+    return `<div class="t3 ${g.k}"><img class="t3gyo" src="gyotaku/${r.sp.id}.webp" alt=""><span class="t3nm">${g.mk} ${escapeHtml(nm)}</span><span class="t3pt">${pct}<small>点</small></span></div>`;
   }).join('');
   const cap = isRef ? `もし出られたら：${scopeLbl}の狙い目トップ3` : `🎯 ${scopeLbl}の狙い目トップ3`;
   return `<div class="top3${isRef?' ref':''}"><div class="top3-cap">${cap}</div><div class="top3-row">${chips}</div></div>`;

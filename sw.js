@@ -1,10 +1,27 @@
 // カヤック釣果予報 サービスワーカー：アプリの外枠をキャッシュし、電波の弱い出艇地点でも起動できるようにする。
 // アプリを更新したら CACHE の番号を上げる（古いキャッシュを破棄するため）。
 // ※予報データ(Open-Meteo/tide736)は別オリジンなのでキャッシュせず、常に最新をネットから取る。
-const CACHE = "fish-forecast-v9";
+const CACHE = "fish-forecast-v10";
 const ASSETS = [
   "./", "./index.html", "./manifest.webmanifest", "./stations.js",
   "./icon-192.png", "./icon-512.png", "./icon-180.png",
+  // 魚拓アイコン（電波が弱くても絵が出るように）
+  "./gyotaku/aori.webp",
+  "./gyotaku/buri.webp",
+  "./gyotaku/kobuRI.webp",
+  "./gyotaku/hata.webp",
+  "./gyotaku/flat.webp",
+  "./gyotaku/aji.webp",
+  "./gyotaku/kisu.webp",
+  "./gyotaku/tachi.webp",
+  "./gyotaku/madai.webp",
+  "./gyotaku/suzuki.webp",
+  "./gyotaku/chinu.webp",
+  "./gyotaku/kamasu.webp",
+  "./gyotaku/mebaru.webp",
+  "./gyotaku/kawahagi.webp",
+  "./gyotaku/maika.webp",
+  "./gyotaku/akamutsu.webp",
 ];
 
 self.addEventListener("install", (e) => {
