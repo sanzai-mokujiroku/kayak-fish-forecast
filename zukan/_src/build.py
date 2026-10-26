@@ -33,7 +33,7 @@ def head(title, desc, canon, img):
 <link rel="stylesheet" href="zukan.css">
 </head>
 <body>'''
-FOOT = '''<footer>富山湾カヤックの<a href="https://sanzai-mokujiroku.github.io/">無料ツール</a>／ブログ <a href="https://kayak-papa.hatenablog.com/">富山湾カヤック釣行 散財黙示録</a></footer>
+FOOT = '''<footer>カヤック釣りの<a href="https://sanzai-mokujiroku.github.io/">無料ツール</a>／ブログ <a href="https://kayak-papa.hatenablog.com/">富山湾カヤック釣行 散財黙示録</a></footer>
 </body>
 </html>'''
 def chart(vals, cap):

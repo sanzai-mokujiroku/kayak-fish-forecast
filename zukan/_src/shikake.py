@@ -173,7 +173,7 @@ for m in M:
 <h1 style="margin-top:10px">{m['h1']}</h1><p class="sub">{m['sub']}</p></div></div>
 <main>{body}
 <section class="src"><h2>出典</h2><ul>{srcs}</ul><p class="cap">号数・長さは目安。釣り場や狙う大きさで変わります。図はこのページ用に描き起こしたもの。</p></section></main>
-<footer>富山湾カヤックの<a href="https://sanzai-mokujiroku.github.io/">無料ツール</a>／ブログ <a href="https://kayak-papa.hatenablog.com/">富山湾カヤック釣行 散財黙示録</a></footer></body></html>'''
+<footer>カヤック釣りの<a href="https://sanzai-mokujiroku.github.io/">無料ツール</a>／ブログ <a href="https://kayak-papa.hatenablog.com/">富山湾カヤック釣行 散財黙示録</a></footer></body></html>'''
     (OUT/f"{m['fn']}.html").write_text(html,encoding='utf-8')
 # 仕掛け一覧
 lst=[('eging','エギング','アオリイカ'),('sabiki','サビキ','アジ・カマス'),('light','メバリング・アジング','メバル・アジ'),('anatsuri','穴釣り','カサゴ・メバル'),('nage','ちょい投げ・投げ釣り','シロギス'),('seabass','シーバスのルアー','スズキ'),('surf','サーフのルアー','ヒラメ'),('uki','ウキ釣り','クロダイ'),('kawahagi','カワハギ釣り','カワハギ'),('jigging','ジギング','ブリ・サゴシ・アカムツ')]
@@ -187,7 +187,7 @@ idx=f'''<!doctype html>
 <div class="hero"><div class="wrap"><div class="crumb"><a href="../../">釣果予報</a> › <a href="../">富山湾の魚図鑑</a> › 仕掛け</div>
 <h1 style="margin-top:10px">釣り方別の仕掛け</h1><p class="sub">道具の目安と、手持ちの竿で代用するときに最低限ほしい性能。</p></div></div>
 <main><a class="cta" href="../../tackle/">🧰 竿の本数から、どれを兼用するか決める →</a>{cards}<p class="cap">数字はダイワ「初心者のための釣り入門」をもとにした目安です。</p></main>
-<footer>富山湾カヤックの<a href="https://sanzai-mokujiroku.github.io/">無料ツール</a>／ブログ <a href="https://kayak-papa.hatenablog.com/">富山湾カヤック釣行 散財黙示録</a></footer></body></html>'''
+<footer>カヤック釣りの<a href="https://sanzai-mokujiroku.github.io/">無料ツール</a>／ブログ <a href="https://kayak-papa.hatenablog.com/">富山湾カヤック釣行 散財黙示録</a></footer></body></html>'''
 (OUT/'index.html').write_text(idx,encoding='utf-8')
 import re as _re
 for fn in ('eging','sabiki'):
