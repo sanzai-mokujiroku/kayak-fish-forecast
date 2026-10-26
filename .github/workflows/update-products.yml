@@ -8,7 +8,7 @@ on:
   workflow_dispatch: {}
   push:                    # 製品リストや取得プログラムを直したときも、すぐ数字を埋め直す
     branches: [main]
-    paths: ["tackle/products.json", "tackle/update_products.py"]
+    paths: ["tackle/products.json", "tackle/update_products.py", ".github/workflows/update-products.yml"]
 permissions:
   contents: write
 jobs:
