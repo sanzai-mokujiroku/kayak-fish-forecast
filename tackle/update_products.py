@@ -73,7 +73,7 @@ def find_row(tables, model):
 
 def main():
     data = json.loads(DATA.read_text(encoding="utf-8"))
-    today = datetime.date.today().isoformat()
+    today = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date().isoformat()   # 日本時間
     cache, changed, report = {}, False, []
     for it in data["items"]:
         url = it["url"]
