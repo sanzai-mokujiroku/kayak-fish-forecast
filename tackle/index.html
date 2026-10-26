@@ -43,6 +43,21 @@
 .legend span{display:flex;align-items:center;gap:4px}.legend i{width:14px;height:14px;border-radius:50%;display:inline-block}
 .empty{color:var(--muted);font-size:14px;text-align:center;padding:20px 0}
 .summary{font-size:14px;margin:0 0 12px}
+/* 実際の竿・リールの例（products.json） */
+.prod{border-bottom:1px solid var(--line)}
+.prod>summary{padding:11px 14px;font-size:13.5px;font-weight:800;color:var(--kon);cursor:pointer;list-style:none;min-height:24px}
+.prod>summary::-webkit-details-marker{display:none}
+.prod>summary::after{content:"＋";float:right;color:var(--muted);font-weight:400}
+.prod[open]>summary::after{content:"−"}
+.prod .pin{padding:0 14px 12px}
+.prod h4{margin:10px 0 4px;font-size:12px;color:var(--muted)}
+.prod ul{list-style:none;margin:0;padding:0}
+.prod li{padding:7px 0;border-top:1px dashed var(--line);font-size:13.5px;line-height:1.5}
+.prod li a{color:var(--kon);font-weight:700}
+.prod li small{display:block;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.prod .mk{display:inline-block;min-width:40px;font-size:11px;font-weight:800;color:#fff;background:#56708f;border-radius:5px;padding:1px 5px;margin-right:6px;text-align:center}
+.prod .lo{display:inline-block;font-size:11px;font-weight:800;color:var(--kon);border:1px solid var(--line);border-radius:999px;padding:0 7px;margin-left:5px}
+.prod .pnote{font-size:11.5px;color:var(--muted);line-height:1.6;margin:8px 0 0}
 </style>
 </head>
 <body>
@@ -198,6 +213,29 @@ function loadURL(){
   document.querySelectorAll('.num').forEach((x,i)=>x.setAttribute('aria-pressed',i+1===N));
   drawMains();
 }
+// 実際の竿・リールの例：products.json（ダイワ分は毎週自動で公式サイトから確認・シマノは手で確認）
+let PROD=null;
+fetch('products.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(j=>{ if(j){ PROD=j; run(); } }).catch(()=>{});
+const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function prodHTML(s,fit){
+  if(!PROD) return '';
+  const ids=s.res.map(r=>r.t.id);
+  const target=(s.res.find(r=>mains.has(r.t.id))||[...s.res].sort((a,b)=>a.g-b.g)[0]||{}).t;   // メイン、なければ一番合う（◎）釣り
+  const okType=it=>!!it.bait===!!s.allBait && it.found!==false;
+  const line=it=>{ const sp=[it.len,it.load&&('対応 '+it.load),it.pe&&(/巻ける/.test(it.pe)?it.pe:'PE '+it.pe+'号'),it.price].filter(Boolean).map(esc).join('・');
+    return `<li><span class="mk">${esc(it.maker)}</span><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.name)}</a>${it.role==='low'?'<span class="lo">安め</span>':''}<small>${sp}${it.note?'<br>'+esc(it.note):''}</small></li>`; };
+  const rods= target? PROD.items.filter(it=>it.kind==='rod'&&it.role!=='multi'&&it.style.includes(target.id)&&okType(it)) : [];
+  const reels= target? PROD.items.filter(it=>it.kind==='reel'&&it.style.includes(target.id)&&okType(it)) : [];
+  const multi= PROD.items.filter(it=>it.role==='multi'&&okType(it)&&it.style.filter(x=>ids.includes(x)).length>=2);
+  if(!rods.length&&!reels.length&&!multi.length) return '';
+  const shimano=PROD.items.find(it=>it.manual_checked);
+  return `<details class="prod"><summary>実際の竿・リールの例（シマノ・ダイワ）</summary><div class="pin">
+    ${rods.length?`<h4>${esc(target.how)}向けの竿</h4><ul>${rods.map(line).join('')}</ul>`:''}
+    ${reels.length?`<h4>リール</h4><ul>${reels.map(line).join('')}</ul>`:''}
+    ${multi.length?`<h4>1本で何役もこなす竿</h4><ul>${multi.map(line).join('')}</ul>`:''}
+    <p class="pnote">数字は各社の公式サイトの仕様表から。ダイワは毎週自動で確認（最終 ${esc(PROD.checked||'-')}）、シマノは ${esc(shimano?shimano.manual_checked:'-')} に確認。価格はメーカー希望本体価格（税別）で、お店ではもっと安いことが多いです。広告ではありません。買う前に公式ページで確かめてください。</p>
+  </div></details>`;
+}
 function run(){
   saveURL();
   const list=T.filter(t=>sel.has(t.id)); const out=$('#out'); memo.clear();
@@ -225,7 +263,7 @@ function run(){
     html+=`<div class="set"><div class="set-h"><b>セット${i+1}${hasMain(s)?'<span class="badge">メイン用</span>':''}</b><span>${s.res.length}つの釣り</span></div>
     <dl class="spec"><dt>竿</dt><dd>長さ ${s.L}フィート（約${ft2m(s.L)}m）・ルアーやオモリ ${Math.round(s.lo)}〜${Math.round(s.lo*4)}g<small>近い竿：${rodName}</small></dd>
     <dt>調子</dt><dd>${actTxt}</dd>
-    <dt>リール</dt><dd>${reel}</dd><dt>糸</dt><dd>${line}${mixed?`<small>＋替えスプールに${s.kind==='pe'?'ナイロン2〜3号':'PE'}</small>`:''}</dd></dl><div class="tg">`;
+    <dt>リール</dt><dd>${reel}</dd><dt>糸</dt><dd>${line}${mixed?`<small>＋替えスプールに${s.kind==='pe'?'ナイロン2〜3号':'PE'}</small>`:''}</dd></dl>${prodHTML(s,fit)}<div class="tg">`;
     s.res.sort((a,b)=>(mains.has(b.t.id)-mains.has(a.t.id))||(a.g-b.g)).forEach(r=>{
       const mk=['◎','○','△','✕'][r.g];
       html+=`<div class="tgt"><div class="g g${r.g}">${mk}</div><div><b>${r.t.name}</b>（${r.t.how}）${mains.has(r.t.id)?'<span class="badge">メイン</span>':''}${r.t.page?` <a href="../zukan/shikake/${r.t.page}.html">仕掛け</a>`:''}<p>${r.why.length?r.why.join('。<br>')+'。':'この竿でちょうどいい。'}</p></div></div>`;

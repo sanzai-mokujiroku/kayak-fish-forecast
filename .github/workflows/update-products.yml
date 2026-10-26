@@ -1,0 +1,28 @@
+# タックル計画の「実際の竿・リールの例」を、毎週月曜の朝に公式サイトから確かめ直す。
+# 数字が変わっていたら tackle/products.json を書き換えて commit（＝自動で公開に反映）。
+# シマノは自動取得を断っている（403）ので対象外。ダイワ分だけ自動。
+name: update-products
+on:
+  schedule:
+    - cron: "0 21 * * 0"   # 日曜21:00 UTC = 月曜6:00（日本時間）
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 公式サイトから確認
+        run: python3 tackle/update_products.py | tee /tmp/report.txt
+      - name: 変わっていれば保存
+        run: |
+          if git diff --quiet; then echo "変更なし"; exit 0; fi
+          git config user.name "products-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add tackle/products.json
+          git commit -m "タックル計画の製品データを公式サイトから自動更新" -m "$(head -c 3000 /tmp/report.txt)"
+          git push

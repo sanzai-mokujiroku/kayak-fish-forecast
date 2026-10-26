@@ -1,0 +1,605 @@
+{
+ "checked": "2026-10-27",
+ "note": "数字は各社公式サイトの仕様表から自動で取得（update_products.py）。価格はメーカー希望本体価格（税別）。",
+ "items": [
+  {
+   "style": [
+    "eging"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "std",
+   "name": "セフィア BB S86ML",
+   "model": "S86ML",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/egisutte/eging/a075f00003e2h9qqaa.html",
+   "note": "",
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "len": "8'6\"",
+   "load": "1.8-3.8号",
+   "pe": "0.4-1",
+   "price": "20,500円",
+   "bait": false
+  },
+  {
+   "style": [
+    "eging"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "low",
+   "name": "ソルティーアドバンス EGING S86ML",
+   "model": "EGING S86ML",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/shoresalt/other/a075f00004axuetqap_2.html",
+   "note": "",
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "len": "8'6\"",
+   "load": "1.8-3.8号",
+   "pe": "0.4-1",
+   "price": "14,000円",
+   "bait": false
+  },
+  {
+   "style": [
+    "eging"
+   ],
+   "maker": "ダイワ",
+   "kind": "rod",
+   "role": "std",
+   "name": "エメラルダス X 86ML",
+   "model": "86ML",
+   "url": "https://www.daiwa.com/jp/product/m471hs0",
+   "note": "",
+   "len": "2.59m",
+   "load": "1.8-3.5号",
+   "pe": "0.5-1.0",
+   "price": "18,600円",
+   "auto": true,
+   "bait": false
+  },
+  {
+   "style": [
+    "eging"
+   ],
+   "maker": "ダイワ",
+   "kind": "rod",
+   "role": "low",
+   "name": "エギング X 86ML",
+   "model": "86ML",
+   "url": "https://www.daiwa.com/jp/product/f3vkl2k",
+   "note": "",
+   "len": "2.59m",
+   "load": "1.8-3.5号",
+   "pe": "0.4-1.0",
+   "price": "14,500円",
+   "auto": true,
+   "bait": false
+  },
+  {
+   "style": [
+    "eging",
+    "tiprun"
+   ],
+   "maker": "シマノ",
+   "kind": "reel",
+   "role": "std",
+   "name": "セフィア BB C3000S",
+   "model": "C3000S",
+   "url": "https://fish.shimano.com/ja-JP/product/reel/hanyouspinning/a075f00004dgnloqa5.html",
+   "note": "",
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "pe": "PE0.6-200m巻ける",
+   "price": "22,500円",
+   "bait": false
+  },
+  {
+   "style": [
+    "eging",
+    "tiprun"
+   ],
+   "maker": "ダイワ",
+   "kind": "reel",
+   "role": "std",
+   "name": "レガリス LT2500S-XH",
+   "model": "LT2500S-XH",
+   "url": "https://www.daiwa.com/jp/product/cx5krwk",
+   "note": "",
+   "pe": "PE0.6-200m巻ける",
+   "price": "13,600円",
+   "auto": true,
+   "bait": false
+  },
+  {
+   "style": [
+    "ajing"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "std",
+   "name": "ソアレ BB アジング S64UL-S",
+   "model": "S64UL-S",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/lightsalt/a075f00003xgh6dqaq.html",
+   "note": "",
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "len": "6'4\"",
+   "load": "0.5-12g",
+   "pe": "0.1-0.6",
+   "price": "17,400円",
+   "bait": false
+  },
+  {
+   "style": [
+    "ajing"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "low",
+   "name": "ソルティーアドバンス AJING S64UL-S",
+   "model": "AJING S64UL-S",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/shoresalt/other/a075f00004axuetqap_2.html",
+   "note": "",
+   "found": true,
+   "auto": false,
+   "manual_checked": "2026-10-27",
+   "len": "6'4\"",
+   "load": "0.3-6g",
+   "pe": "0.1-0.4",
+   "price": "13,700円",
+   "bait": false
+  },
+  {
+   "style": [
+    "ajing"
+   ],
+   "maker": "ダイワ",
+   "kind": "rod",
+   "role": "std",
+   "name": "月下美人 AJING 68L-S",
+   "model": "68L-S",
+   "url": "https://www.daiwa.com/jp/product/lrbshqq",
+   "note": "",
+   "len": "2.03m",
+   "load": "0.5-8g",
+   "pe": "0.1-0.4",
+   "price": "17,500円",
+   "auto": true,
+   "bait": false
+  },
+  {
+   "style": [
+    "ajing"
+   ],
+   "maker": "ダイワ",
+   "kind": "rod",
+   "role": "low",
+   "name": "アジメバル X 66L-S",
+   "model": "66L-S",
+   "url": "https://www.daiwa.com/jp/product/1u2qomz",
+   "note": "",
+   "len": "1.98m",
+   "load": "0.5-8g",
+   "pe": "0.1-0.4",
+   "price": "13,800円",
+   "auto": true,
+   "bait": false
+  },
+  {
+   "style": [
+    "ajing"
+   ],
+   "maker": "シマノ",
+   "kind": "reel",
+   "role": "std",
+   "name": "ソアレ BB C2000SSPG",
+   "model": "C2000SSPG",
+   "url": "https://fish.shimano.com/ja-JP/product/reel/hanyouspinning/a075f00004dgnmqqap.html",
+   "note": "",
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "pe": "PE0.6-140m巻ける",
+   "price": "21,500円",
+   "bait": false
+  },
+  {
+   "style": [
+    "ajing"
+   ],
+   "maker": "ダイワ",
+   "kind": "reel",
+   "role": "std",
+   "name": "レガリス LT2000S-P",
+   "model": "LT2000S-P",
+   "url": "https://www.daiwa.com/jp/product/cx5krwk",
+   "note": "",
+   "pe": "PE0.4-200m巻ける",
+   "price": "12,600円",
+   "auto": true,
+   "bait": false
+  },
+  {
+   "style": [
+    "tairaba"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "std",
+   "name": "炎月 BB B69ML-S",
+   "model": "B69ML-S",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/tairubber/a075f00003e2ceeqay.html",
+   "note": "",
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "len": "6'9\"",
+   "load": "タイラバ 30-100g",
+   "pe": "MAX 1",
+   "price": "19,700円",
+   "bait": true
+  },
+  {
+   "style": [
+    "tairaba"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "low",
+   "name": "ソルティーアドバンス TAIRABA B69ML-S",
+   "model": "TAIRABA B69ML-S",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/generalsaltlure/general/a075f00004axuetqap_1.html",
+   "note": "",
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "len": "6'9\"",
+   "load": "タイラバ 30-100g",
+   "pe": "MAX 1",
+   "price": "17,100円",
+   "bait": true
+  },
+  {
+   "style": [
+    "tairaba"
+   ],
+   "maker": "ダイワ",
+   "kind": "rod",
+   "role": "std",
+   "name": "紅牙 X 69MB-S",
+   "model": "69MB-S",
+   "url": "https://www.daiwa.com/jp/product/r2yzcsa",
+   "note": "",
+   "len": "2.06m",
+   "load": "30-120g",
+   "pe": "0.5-1.0",
+   "price": "16,500円",
+   "auto": true,
+   "bait": true
+  },
+  {
+   "style": [
+    "tairaba"
+   ],
+   "maker": "シマノ",
+   "kind": "reel",
+   "role": "std",
+   "name": "炎月 BB 100PG（右巻き）",
+   "model": "100PG RIGHT",
+   "url": "https://fish.shimano.com/ja-JP/product/reel/ryojikuoffshorefunesmall/a075f00003iml81qag.html",
+   "note": "ベイト（両軸）",
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "pe": "PE1-200m巻ける",
+   "price": "17,500円",
+   "bait": true
+  },
+  {
+   "style": [
+    "tairaba"
+   ],
+   "maker": "ダイワ",
+   "kind": "reel",
+   "role": "std",
+   "name": "紅牙 X IC",
+   "model": "紅牙XIC",
+   "url": "https://www.daiwa.com/jp/product/23djpmj",
+   "note": "ベイト（両軸）・水深が数字で出る",
+   "pe": "PE0.8-300m巻ける",
+   "price": "16,000円",
+   "auto": true,
+   "bait": true
+  },
+  {
+   "style": [
+    "lj"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "std",
+   "name": "グラップラー BB タイプLJ S63-2",
+   "model": "S63-2",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/offshoresalt/lightjigging/a075f00003e2c9rqaa.html",
+   "note": "",
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "len": "6'3\"",
+   "load": "40-160g",
+   "pe": "MAX 2",
+   "price": "21,500円",
+   "bait": false
+  },
+  {
+   "style": [
+    "lj"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "low",
+   "name": "ソルティーアドバンス LIGHT JIGGING S63ML",
+   "model": "LIGHT JIGGING S63ML",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/generalsaltlure/general/a075f00004axuetqap_1.html",
+   "note": "",
+   "found": true,
+   "auto": false,
+   "manual_checked": "2026-10-27",
+   "len": "6'3\"",
+   "load": "MAX 150g",
+   "pe": "MAX 2",
+   "price": "14,000円",
+   "bait": false
+  },
+  {
+   "style": [
+    "lj"
+   ],
+   "maker": "ダイワ",
+   "kind": "rod",
+   "role": "std",
+   "name": "アウトレイジ XV LJ 63XHS",
+   "model": "LJ63XHS",
+   "url": "https://www.daiwa.com/jp/product/muktlja",
+   "note": "糸はPE1.5号まで",
+   "len": "1.91m",
+   "load": "60-160g",
+   "pe": "0.8-1.5",
+   "price": "18,000円",
+   "auto": true,
+   "bait": false
+  },
+  {
+   "style": [
+    "lj"
+   ],
+   "maker": "シマノ",
+   "kind": "reel",
+   "role": "std",
+   "name": "ナスキー 4000XG",
+   "model": "4000XG",
+   "url": "https://fish.shimano.com/ja-JP/product/reel/hanyouspinning/a075f00003slx0xqac.html",
+   "note": "",
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "pe": "PE1.5-320m巻ける",
+   "price": "15,300円",
+   "bait": false
+  },
+  {
+   "style": [
+    "lj"
+   ],
+   "maker": "ダイワ",
+   "kind": "reel",
+   "role": "std",
+   "name": "レガリス LT4000-CXH",
+   "model": "LT4000-CXH",
+   "url": "https://www.daiwa.com/jp/product/cx5krwk",
+   "note": "",
+   "pe": "PE1.2-310m巻ける",
+   "price": "14,600円",
+   "auto": true,
+   "bait": false
+  },
+  {
+   "style": [
+    "tiprun"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "std",
+   "name": "セフィア BB ティップエギング R-S66ML-S",
+   "model": "R-S66ML-S",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/egisutte/tipeging/a075f00003e2jl9qai.html",
+   "note": "",
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "len": "6'6\"",
+   "load": "MAX 60g",
+   "pe": "0.4-1",
+   "price": "19,900円",
+   "bait": false
+  },
+  {
+   "style": [
+    "tiprun"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "low",
+   "name": "ソルティーアドバンス METAL SUTTE/TIP EGING S66ML-S",
+   "model": "METAL SUTTE/TIP EGING S66ML-S",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/generalsaltlure/general/a075f00004axuetqap_1.html",
+   "note": "",
+   "found": true,
+   "auto": false,
+   "manual_checked": "2026-10-27",
+   "len": "6'6\"",
+   "load": "エギ MAX 60g",
+   "pe": "0.4-1",
+   "price": "15,300円",
+   "bait": false
+  },
+  {
+   "style": [
+    "tiprun"
+   ],
+   "maker": "ダイワ",
+   "kind": "rod",
+   "role": "std",
+   "name": "エメラルダス X BOAT 65MLS-S",
+   "model": "65MLS-S",
+   "url": "https://www.daiwa.com/jp/product/i287ax4",
+   "note": "",
+   "len": "1.96m",
+   "load": "18-70g",
+   "pe": "0.4-0.8",
+   "price": "19,800円",
+   "auto": true,
+   "bait": false
+  },
+  {
+   "style": [
+    "tairaba",
+    "tiprun",
+    "lj"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "multi",
+   "name": "クロスミッション BB S66M-S",
+   "model": "S66M-S",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/offshoresalt/other/a075f00003e2cqyqai.html",
+   "note": "ジギング・タイラバ・ティップランを1本で",
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "len": "6'6\"",
+   "load": "ジグ MAX 120g・エギ MAX 90g",
+   "pe": "MAX 1.2",
+   "price": "21,500円",
+   "bait": false
+  },
+  {
+   "style": [
+    "tiprun",
+    "eging"
+   ],
+   "maker": "ダイワ",
+   "kind": "rod",
+   "role": "multi",
+   "name": "エメラルダス X BOAT 70MS-S",
+   "model": "70MS-S",
+   "url": "https://www.daiwa.com/jp/product/i287ax4",
+   "note": "ティップランとエギを投げる釣りを1本で",
+   "len": "2.13m",
+   "load": "25-90g",
+   "pe": "0.4-1.0",
+   "price": "19,800円",
+   "auto": true,
+   "bait": false
+  },
+  {
+   "style": [
+    "lj"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "std",
+   "name": "グラップラー BB タイプLJ B63-2",
+   "model": "B63-2",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/offshoresalt/lightjigging/a075f00003e2c9rqaa.html",
+   "note": "ベイト用",
+   "bait": true,
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "len": "6'3\"",
+   "load": "50-160g",
+   "pe": "MAX 2",
+   "price": "21,500円"
+  },
+  {
+   "style": [
+    "lj"
+   ],
+   "maker": "ダイワ",
+   "kind": "rod",
+   "role": "std",
+   "name": "アウトレイジ XV LJ 63XHB",
+   "model": "LJ63XHB",
+   "url": "https://www.daiwa.com/jp/product/muktlja",
+   "note": "ベイト用・糸はPE1.5号まで",
+   "bait": true,
+   "auto": true,
+   "len": "1.91m",
+   "load": "60-160g",
+   "pe": "0.8-1.5",
+   "price": "18,000円"
+  },
+  {
+   "style": [
+    "lj"
+   ],
+   "maker": "シマノ",
+   "kind": "reel",
+   "role": "std",
+   "name": "グラップラー BB 150HG（右巻き）",
+   "model": "150HG RIGHT",
+   "url": "https://fish.shimano.com/ja-JP/product/reel/ryojikuoffshorefunesmall/a075f00003imnx9qao.html",
+   "note": "ベイト（両軸）",
+   "bait": true,
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "pe": "PE1.5-200m巻ける",
+   "price": "17,500円"
+  },
+  {
+   "style": [
+    "tairaba"
+   ],
+   "maker": "シマノ",
+   "kind": "rod",
+   "role": "std",
+   "name": "炎月 BB S610M",
+   "model": "S610M",
+   "url": "https://fish.shimano.com/ja-JP/product/rod/tairubber/a075f00003e2ceeqay.html",
+   "note": "スピニング用（投げて斜めに引くタイラバ）",
+   "bait": false,
+   "auto": false,
+   "found": true,
+   "manual_checked": "2026-10-27",
+   "len": "6'10\"",
+   "load": "タイラバ 20-100g",
+   "pe": "MAX 1.2",
+   "price": "20,200円"
+  },
+  {
+   "style": [
+    "tairaba"
+   ],
+   "maker": "ダイワ",
+   "kind": "rod",
+   "role": "std",
+   "name": "紅牙 X 69MHS-S",
+   "model": "69MHS-S",
+   "url": "https://www.daiwa.com/jp/product/r2yzcsa",
+   "note": "スピニング用（投げて斜めに引くタイラバ）",
+   "bait": false,
+   "auto": true,
+   "len": "2.06m",
+   "load": "20-65g",
+   "pe": "0.6-1.2",
+   "price": "16,500円"
+  }
+ ]
+}
