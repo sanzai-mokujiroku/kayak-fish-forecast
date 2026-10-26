@@ -46,7 +46,7 @@ def svg(items, rod, reel):
     leg=f'<line x1="10" y1="{H-40}" x2="350" y2="{H-40}" stroke="#d5dde6"/>'+lab(14,H-18,'竿','#67778a',13,700)+lab(60,H-18,rod,'#0e294e',13)+lab(14,H+6,'リール','#67778a',13,700)+lab(60,H+6,reel,'#0e294e',13)
     return f'<div class="rig"><svg viewBox="0 0 360 {H+20}" xmlns="http://www.w3.org/2000/svg">{rodp}{"".join(parts)}{leg}</svg></div>'
 def li(xs): return '<ul>'+''.join(f'<li>{x}</li>' for x in xs)+'</ul>'
-CSS='''<style>.rig{background:#f6f9fc;border-radius:12px;padding:6px;margin:6px 0 10px}.rig svg{width:100%;height:auto;display:block}
+CSS='''<style>.rig{margin:6px 0 12px}.rig svg{width:100%;height:auto;display:block}
 table{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0 12px}th,td{border:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}th{background:#eef3f8;font-size:12.5px;white-space:nowrap}.rec{color:var(--shu);font-weight:800}.tag{display:inline-block;background:#fff4e0;color:#8a5a00;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;margin-bottom:6px}</style>'''
 M=[]
 def add(**k): M.append(k)
@@ -81,7 +81,7 @@ add(fn='light', h1='メバリング・アジングの仕掛け', sub='軽いジ�
  points=['夜の常夜灯まわりや、潮の当たる所。ゆっくり巻くのが基本。','メバルは根の上や海藻のまわりに、頭を上にして群れていることが多い。'],
  fish=[('mebaru','メバル'),('aji','アジ')], src=[('ダイワ「初心者のための釣り入門：メバル、アジをルアーで釣る」','https://www.daiwa.com/jp/beginner/place/mebaru_mekki_lure')])
 add(fn='seabass', h1='シーバス（スズキ）のルアーの仕掛け', sub='河口や港で、ミノーやバイブレーションを投げる。', tag=None,
- items=[('line','pe','道糸：PE 0.8〜1.5号','',70),('knot','FGノットか電車結び'),('line','fluoro','リーダー：フロロ','16〜20lb・70cm〜1.5m',60),('knot','クリンチノット'),('minnow','ミノー・バイブなど','シンキングペンシルも')],
+ items=[('line','pe','道糸：PE 0.8〜1.5号','',70),('knot','FGノットか電車結び'),('line','fluoro','リーダー：フロロ','16〜20lb',60),('knot','クリンチノット'),('minnow','ミノー・バイブなど','シンキングペンシルも')],
  rod='シーバスロッド 7〜13フィート（ML〜H）', reel='スピニング LT3000〜4000番',
  table=[('竿','<span class="rec">シーバスロッド</span> 7〜13フィート（ML〜H）。最初の1本なら<b>9フィート前後のML</b>','下で説明'),('リール','LT3000〜4000番のスピニング','—'),('道糸','PE 0.8〜1.5号（最初は1.0号）','—'),('リーダー','フロロ 16〜20lb（最初は16lb）、70cm〜1.5m','—'),('ルアー','シンキングペンシル、フローティングミノー、バイブレーション','—')],
  perf=['<b>10〜30g前後のルアーを遠くへ投げられること。</b>','<b>場所に合った長さ。</b>港の中なら短め、河口や浜なら長め。ダイワは、最初は9フィート前後をすすめている。','<b>跳ねたり首を振ったりする魚に、糸をゆるめず付いていけること。</b>'],
@@ -91,7 +91,7 @@ add(fn='seabass', h1='シーバス（スズキ）のルアーの仕掛け', sub=
  points=['夜や、雨のあとの濁りがよいとされる。','掛かると水面で跳ねて首を振る（エラ洗い）。竿を寝かせて、糸をゆるめない。'],
  fish=[('suzuki','スズキ')], src=[('ダイワ「初心者のための釣り入門：シーバスをルアーで釣る」','https://www.daiwa.com/jp/beginner/place/seabass_lure')])
 add(fn='surf', h1='サーフ（砂浜）のルアーの仕掛け', sub='浜から遠くへ投げて、ヒラメを。', tag=None,
- items=[('line','pe','道糸：PE 0.8〜1.2号','',70),('knot','FGノット'),('line','fluoro','リーダー：フロロ','16〜20lb・1.5〜2m',70),('knot','クリンチノット'),('minnow','ミノー 9〜14cm','メタルジグ30〜40gなど')],
+ items=[('line','pe','道糸：PE 0.8〜1.2号','',70),('knot','FGノット'),('line','fluoro','リーダー：フロロ','16〜20lb・1.5〜2m',70),('knot','クリンチノット'),('minnow','ミノー 9〜14cm','メタルジグ30〜40gも')],
  rod='サーフ用ルアーロッド 9〜11フィート（ML・M）', reel='スピニング LT4000〜5000番',
  table=[('竿','<span class="rec">サーフ用のルアーロッド</span> 9〜11フィート（ML・M）','下で説明'),('リール','LT4000〜5000番のスピニング','—'),('道糸','PE 0.8〜1.2号','—'),('リーダー','フロロ 16〜20lb、1.5〜2m','—'),('ルアー','ミノー（9〜14cm）、メタルジグ（30〜40g）、ジグヘッドワーム（14〜28g）','色はピンク・オレンジ・派手な色に実績')],
  perf=['<b>飛距離。</b>ダイワも「サーフ攻略で重要な要素のひとつが飛距離。長めのロッドが有利」としている。','<b>30〜40gのメタルジグまで投げられる強さ。</b>','<b>底近くをずっと引いてこられる、重めのルアーに合う張り。</b>'],
@@ -130,12 +130,31 @@ add(fn='jigging', h1='ジギングの仕掛け（青物）', sub='金属のル�
  reelnote='PEの号数に合わせて、たくさん巻けて巻く力の強いリールを。',
  points=['ダイワは「最初の一本は、操作がしやすいスピニングがおすすめ」としている。','カヤックでは、大きな魚に艇ごと引っぱられる。ドラグは緩めに。'],
  fish=[('buri','ブリ'),('kobuRI','サゴシ'),('akamutsu','アカムツ（深場は重いジグ）')], src=[('ダイワ「初心者のための釣り入門：ジギングで釣る」','https://www.daiwa.com/jp/beginner/place/kanpachi_buri_jigging'),('シマノ グラップラー タイプLJ 仕様','https://fishshop.shimano.com/products/25grappler-type-lj-cast-us')])
+
+# ---- 新しい図（rigdraw）の部品の並び ----
+import sys as _s; _s.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import rigdraw
+RIGS = {
+ 'eging':   ([('line','pe',70,'道糸：PE','0.6〜1号'),('knot','FGノット'),('line','fluoro',60,'リーダー：フロロ','1.5〜2.5号・1〜1.5m'),('knot','クリンチノット'),('egi','エギ','2.5〜3.5号')],'エギングロッド 7〜9フィート','スピニング 2500番クラス',False),
+ 'sabiki':  ([('line','nylon',50,'道糸：ナイロン','2〜3号'),('swivel','ヨリモドシ','スナップ付き・5〜6号'),('bag','コマセ袋','アミエビを詰める'),('sabiki',5,'サビキ仕掛け','市販品'),('sinker','オモリ','5〜15号')],'磯竿か投げ竿 3.6〜4.5m','スピニング 2500番クラス',False),
+ 'anatsuri':([('line','nylon',70,'道糸：ナイロン','2〜3号'),('swivel','ヨリモドシ','5〜6号'),('egg','中通しオモリ','3〜10号'),('line','fluoro',56,'ハリス：フロロ','2〜3号・30cm前後'),('hook','ハリ','ムツ10〜12号など')],'磯竿・投げ竿 3.6〜4.5m など','スピニング 2000番クラス',True),
+ 'nage':    ([('line','nylon',36,'道糸',None),('line','power',60,'力糸','3〜12号・10〜15m'),('tenbin','テンビン＋オモリ','15〜25号'),('line','fluoro',50,'幹糸：フロロ','3〜4号・50〜60cm'),('branch',2,'ハリス：フロロ','2〜3号・30cm前後')],'投げ竿 3.5〜4.2m','投げ釣り専用リール',True),
+ 'light':   ([('line','pe',70,'道糸：PE 0.2〜0.4号','またはフロロ 2〜4lb'),('knot','FGノット'),('line','fluoro',56,'リーダー：フロロ','4〜8lb'),('knot','クリンチノット'),('jighead','ジグヘッド 1〜3g','＋ワーム2インチ前後')],'ライトソルト用 5〜7フィート（UL・L）','スピニング 2000番クラス',False),
+ 'seabass': ([('line','pe',70,'道糸：PE','0.8〜1.5号'),('knot','FGノットか電車結び'),('line','fluoro',60,'リーダー：フロロ','16〜20lb'),('knot','クリンチノット'),('minnow','ミノー・バイブなど','シンキングペンシルも')],'シーバスロッド 7〜13フィート（ML〜H）','スピニング LT3000〜4000番',False),
+ 'surf':    ([('line','pe',70,'道糸：PE','0.8〜1.2号'),('knot','FGノット'),('line','fluoro',66,'リーダー：フロロ','16〜20lb・1.5〜2m'),('knot','クリンチノット'),('minnow','ミノー 9〜14cm','メタルジグ30〜40gも')],'サーフ用ルアーロッド 9〜11フィート','スピニング LT4000〜5000番',True),
+ 'uki':     ([('line','nylon',40,'道糸：ナイロン','2〜3号'),('knot','ウキ止め'),('float','円錐ウキ','上にシモリ玉'),('swivel','ヨリモドシ','10号'),('line','fluoro',70,'ハリス：フロロ','1.5〜3号・1.5〜4m'),('hook','ハリ','チヌ1〜3号')],'磯竿 1〜1.5号・4.2〜5.3m','スピニング 2500番クラス',False),
+ 'kawahagi':([('line','pe',60,'道糸：PE','0.8〜1.0号'),('swivel','ヨリモドシ','5〜6号'),('line','fluoro',40,'幹糸：フロロ 3号','70cm〜1m'),('branch',3,'枝ス：フロロ 2〜3号','10cm前後'),('sinker','オモリ','25〜30号')],'先調子の竿 1.8〜2.1m','両軸受けリール 100〜150番',True),
+ 'jigging': ([('line','pe',70,'道糸：PE','2〜4号'),('knot','FGノットなど'),('line','fluoro',70,'リーダー：フロロ','30〜60lb・3〜6m'),('knot','クリンチノット'),('jig','メタルジグ','重さは竿に合わせる')],'ジギングロッド 5.5〜6.5フィート','スピニング5000〜8000番 など',False),
+}
+def rigsvg(fn):
+    it, rod, reel, bed = RIGS[fn]
+    return rigdraw.draw(it, rod, reel, bed)
 FONT='https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@800&display=swap&text='+urllib.parse.quote(''.join(sorted(set(''.join(m['h1'] for m in M)+'エギングサビキの仕掛け釣り方富山湾魚図鑑'))))
 for m in M:
     tbl='<table><tr><th></th><th>おすすめ（専用）</th><th>代わり・補足</th></tr>'+''.join(f'<tr><th>{a}</th><td>{b}</td><td>{c}</td></tr>' for a,b,c in m['table'])+'</table>'
     fish=' ・ '.join(f'<a href="../{i}.html">{n}</a>' for i,n in m['fish'])
     body=f'''{'<span class="tag">⚠️ '+m['tag']+'</span>' if m['tag'] else ''}
-{svg(m['items'],m['rod'],m['reel'])}
+{rigsvg(m['fn'])}
 <section><h2>道具の目安</h2>{tbl}</section>
 <section><h2>専用じゃない竿を使うなら：最低限ほしい性能</h2>
 <h3>この釣りは、こんな性能がほしい</h3>{li(m['perf'])}
@@ -170,4 +189,10 @@ idx=f'''<!doctype html>
 <main>{cards}<p class="cap">数字はダイワ「初心者のための釣り入門」をもとにした目安です。</p></main>
 <footer>富山湾カヤックの<a href="https://sanzai-mokujiroku.github.io/">無料ツール</a>／ブログ <a href="https://kayak-papa.hatenablog.com/">富山湾カヤック釣行 散財黙示録</a></footer></body></html>'''
 (OUT/'index.html').write_text(idx,encoding='utf-8')
+import re as _re
+for fn in ('eging','sabiki'):
+    f=OUT/f'{fn}.html'; t=f.read_text(encoding='utf-8')
+    t=_re.sub(r'<div class="rig">.*?</svg></div>', lambda _m: rigsvg(fn), t, count=1, flags=_re.S)
+    t=t.replace('.rig{background:#f6f9fc;border-radius:12px;padding:6px;margin:6px 0 10px}','.rig{margin:6px 0 12px}')
+    f.write_text(t,encoding='utf-8')
 print('ok',len(M))
