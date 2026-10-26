@@ -186,7 +186,7 @@ idx=f'''<!doctype html>
 <link rel="stylesheet" href="{FONT}"><link rel="stylesheet" href="../zukan.css"></head><body>
 <div class="hero"><div class="wrap"><div class="crumb"><a href="../../">釣果予報</a> › <a href="../">富山湾の魚図鑑</a> › 仕掛け</div>
 <h1 style="margin-top:10px">釣り方別の仕掛け</h1><p class="sub">道具の目安と、手持ちの竿で代用するときに最低限ほしい性能。</p></div></div>
-<main>{cards}<p class="cap">数字はダイワ「初心者のための釣り入門」をもとにした目安です。</p></main>
+<main><a class="cta" href="../../tackle/">🧰 竿の本数から、どれを兼用するか決める →</a>{cards}<p class="cap">数字はダイワ「初心者のための釣り入門」をもとにした目安です。</p></main>
 <footer>富山湾カヤックの<a href="https://sanzai-mokujiroku.github.io/">無料ツール</a>／ブログ <a href="https://kayak-papa.hatenablog.com/">富山湾カヤック釣行 散財黙示録</a></footer></body></html>'''
 (OUT/'index.html').write_text(idx,encoding='utf-8')
 import re as _re

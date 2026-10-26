@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>タックルの組み合わせ計画｜やりたい釣りと竿の本数から、最適なセットを出す</title>
+<meta name="description" content="やりたい釣り（エギング・サビキ・タイラバ・ジギングなど）と、用意できる竿の本数を選ぶと、何をどの竿で兼用すると無理が少ないかを出す無料ツール。">
+<link rel="canonical" href="https://sanzai-mokujiroku.github.io/kayak-fish-forecast/tackle/">
+<meta name="theme-color" content="#0e294e">
+<link rel="icon" type="image/png" href="../icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@800&display=swap&text=%E3%82%BF%E3%83%83%E3%82%AF%E3%83%AB%E3%81%AE%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E8%A8%88%E7%94%BB%E3%82%BB%E3%83%83%E3%83%881234%E7%9B%AE">
+<link rel="stylesheet" href="../zukan/zukan.css">
+<style>
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:13.5px;font-weight:700;color:var(--ink);cursor:pointer}
+.chip small{color:var(--muted);font-weight:600;margin-left:4px}
+.chip[aria-pressed="true"]{background:var(--kon);border-color:var(--kon);color:#fff}
+.chip[aria-pressed="true"] small{color:#bcd3ea}
+.chip:focus-visible,.num:focus-visible{outline:3px solid #8fc6ee;outline-offset:2px}
+.nums{display:flex;gap:8px}
+.num{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:12px 0;font-size:18px;font-weight:800;color:var(--kon);cursor:pointer}
+.num[aria-pressed="true"]{background:var(--shu);border-color:var(--shu);color:#fff}
+.set{background:#fff;border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden}
+.set-h{background:var(--kon);color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:baseline}
+.set-h b{font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;font-size:19px}
+.set-h span{font-size:12px;color:#bcd3ea}
+.spec{display:grid;grid-template-columns:64px 1fr;gap:4px 10px;padding:12px 14px;font-size:14px;border-bottom:1px solid var(--line)}
+.spec dt{color:var(--muted);font-size:12.5px;font-weight:700}
+.spec dd{margin:0;font-weight:700}
+.spec dd small{display:block;font-weight:600;color:var(--muted);font-size:12px}
+.tg{padding:10px 14px 4px}
+.tgt{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed var(--line)}
+.tgt:last-child{border-bottom:0}
+.g{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;font-size:16px}
+.g0{background:#1e9e54}.g1{background:#2a76a3}.g2{background:#e6a100}.g3{background:#d63031}
+.tgt b{font-size:14.5px}.tgt p{margin:2px 0 0;font-size:12.5px;color:#4a5d70;line-height:1.55}
+.tgt a{font-size:12px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin:4px 0 12px}
+.legend span{display:flex;align-items:center;gap:4px}.legend i{width:14px;height:14px;border-radius:50%;display:inline-block}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:20px 0}
+.summary{font-size:14px;margin:0 0 12px}
+</style>
+</head>
+<body>
+<div class="hero"><div class="wrap">
+  <div class="crumb"><a href="../">釣果予報</a> › <a href="../zukan/">富山湾の魚図鑑</a> › タックル計画</div>
+  <h1 style="margin-top:10px">タックルの組み合わせ計画</h1>
+  <p class="sub">やりたい釣りと、用意できる竿の本数を選ぶと、<br>どれをどの竿で兼用すると無理が少ないかを出します。</p>
+</div></div>
+<main>
+  <section>
+    <h2>1. やりたい釣りを選ぶ（8つまで）</h2>
+    <h3>🏖️ 岸から</h3><div class="chips" id="shore"></div>
+    <h3>🛶 カヤック・船から</h3><div class="chips" id="boat"></div>
+  </section>
+  <section>
+    <h2>2. 用意できる竿とリールのセット数</h2>
+    <div class="nums" id="nums"></div>
+  </section>
+  <section style="background:transparent;border:0;padding:0">
+    <h2 style="padding:0 2px">3. おすすめの組み合わせ</h2>
+    <div class="legend"><span><i class="g0"></i>◎ ちょうどいい</span><span><i class="g1"></i>○ 使える</span><span><i class="g2"></i>△ 無理がある</span><span><i class="g3"></i>✕ 実質できない</span></div>
+    <div id="out"><p class="empty">上で、やりたい釣りを選んでください。</p></div>
+  </section>
+  <section class="src">
+    <h2>判定のしくみと出典</h2>
+    <p class="cap">釣りごとに「竿の長さ」「ルアー・オモリの重さ」「リールの種類と大きさ」「糸の種類と太さ」の目安を持たせ、1本の竿でまとめたときにどれだけ外れるかで◎〜✕を出しています。竿1本で扱えるルアーの重さは、だいたい一番軽いものの4倍くらいまでとして計算しています。選んだ釣りをセットに振り分ける全部の組み合わせを試して、無理が一番少ないものを出しています。</p>
+    <ul>
+      <li><a href="https://www.daiwa.com/jp/beginner/place/">ダイワ「初心者のための釣り入門」</a>（エギング・サビキ・アジング/メバリング・穴釣り・投げ釣り・シーバス・サーフ・ウキ釣り・カワハギ）</li>
+      <li>ティップラン：<a href="https://corp.tacklenote.jp/columns/?p=108082">タックルノート</a>・<a href="https://tsurihack.com/6099">TSURI HACK</a></li>
+      <li>タイラバ：<a href="https://tsurihack.com/5778">TSURI HACK</a></li>
+      <li>ライトジギング：<a href="https://tsurihack.com/8318">TSURI HACK</a>・<a href="https://corp.tacklenote.jp/columns/?p=83231">タックルノート</a></li>
+      <li>ショアジギング：<a href="https://www.bepal.net/archives/242418">BE-PAL</a>・<a href="https://www.bepal.net/archives/243851">BE-PAL（リール）</a></li>
+      <li>深場（アカムツ）：<a href="https://fishing-toyama.com/toyama-bay-akamutsu-guide/">fishing-toyama.com</a></li>
+    </ul>
+    <p class="cap">数字はどれも目安です。実際の竿は、本体に書いてある「ルアー重量」「適合ライン」を必ず確認してください。</p>
+  </section>
+</main>
+<footer>富山湾カヤックの<a href="https://sanzai-mokujiroku.github.io/">無料ツール</a>／ブログ <a href="https://kayak-papa.hatenablog.com/">富山湾カヤック釣行 散財黙示録</a></footer>
+<script>
+// len: 竿の長さ[フィート]  w: ルアー・オモリ[g]  line: 'pe'|'nylon'|'any' と号数  reel: spin=スピニング番手 / bait=ベイトが本来向く
+// cast: 投げる釣りか  boat: カヤック・船の釣りか  rod: 本来の竿の名前  page: 仕掛けページ
+const T = [
+ {id:'eging',   name:'アオリイカ', how:'エギング',       boat:0, len:[7,9],    w:[10,20],  line:['pe',0.6,1],   spin:[2000,3000], bait:0, cast:1, rod:'エギングロッド', page:'eging'},
+ {id:'sabiki',  name:'アジ・サバ', how:'サビキ',         boat:0, len:[12,15],  w:[19,56],  line:['nylon',2,3], spin:[2500,3000], bait:0, cast:0, rod:'磯竿・投げ竿（万能竿でも可）', page:'sabiki'},
+ {id:'ajing',   name:'アジ・メバル', how:'アジング・メバリング', boat:0, len:[5,7], w:[1,3], line:['pe',0.2,0.4], spin:[1000,2500], bait:0, cast:1, rod:'ライトソルト用ロッド', page:'light'},
+ {id:'ana',     name:'カサゴ', how:'穴釣り',            boat:0, len:[6,15],   w:[11,38],  line:['nylon',2,3], spin:[2000,2500], bait:0, cast:0, rod:'磯竿・投げ竿・ルアーロッド', page:'anatsuri'},
+ {id:'nage',    name:'シロギス', how:'投げ釣り',         boat:0, len:[11.5,14],w:[56,94],  line:['any',2,4],   spin:[4000,6000], bait:0, cast:1, rod:'投げ竿', page:'nage'},
+ {id:'seabass', name:'スズキ', how:'シーバスのルアー',    boat:0, len:[8,10],   w:[10,30],  line:['pe',0.8,1.5], spin:[3000,4000], bait:0, cast:1, rod:'シーバスロッド', page:'seabass'},
+ {id:'surf',    name:'ヒラメ', how:'サーフのルアー',      boat:0, len:[9,11],   w:[14,40],  line:['pe',0.8,1.2], spin:[4000,5000], bait:0, cast:1, rod:'サーフ用ルアーロッド', page:'surf'},
+ {id:'uki',     name:'クロダイ', how:'ウキ釣り',         boat:0, len:[14,17.5],w:[1,10],   line:['nylon',2,3], spin:[2500,3000], bait:0, cast:1, rod:'磯竿 1〜1.5号', page:'uki'},
+ {id:'shorejig',name:'青物', how:'ショアジギング',        boat:0, len:[9,11],   w:[15,60],  line:['pe',1,2],    spin:[4000,5000], bait:0, cast:1, rod:'ショアジギングロッド', page:'jigging'},
+ {id:'tiprun',  name:'アオリイカ', how:'ティップラン',     boat:1, len:[6,7],    w:[30,100], line:['pe',0.6,1],  spin:[2500,3000], bait:0, cast:0, rod:'ティップラン専用ロッド', page:'eging'},
+ {id:'tairaba', name:'マダイ', how:'タイラバ',            boat:1, len:[5.5,7],  w:[60,120], line:['pe',0.6,1],  spin:[3000,4000], bait:1, cast:0, rod:'タイラバロッド', page:null},
+ {id:'lj',      name:'青物・根魚', how:'ライトジギング',   boat:1, len:[6,6.6],  w:[60,150], line:['pe',1.5,3],  spin:[4000,5000], bait:1, cast:0, rod:'ライトジギングロッド', page:'jigging'},
+ {id:'kawahagi',name:'カワハギ', how:'カワハギ釣り',      boat:1, len:[6,7],    w:[94,113], line:['pe',0.8,1],  spin:[2500,3000], bait:1, cast:0, rod:'カワハギ竿（先調子）', page:'kawahagi'},
+ {id:'deep',    name:'アカムツ', how:'深場のジギング',    boat:1, len:[6,7],    w:[130,200],line:['pe',0.8,1.2],spin:[4000,5000], bait:1, cast:0, rod:'深場用（スロー系）ロッド', page:'jigging'},
+];
+const SIZES=[1000,2000,2500,3000,4000,5000,6000];
+const PE=[0.2,0.3,0.4,0.6,0.8,1,1.2,1.5,2,3];
+const sel=new Set(); let N=1;
+const $=s=>document.querySelector(s);
+const ft2m=f=>(f*0.3048).toFixed(1);
+function chips(){
+  for(const t of T){
+    const b=document.createElement('button'); b.className='chip'; b.type='button'; b.setAttribute('aria-pressed','false');
+    b.innerHTML=`${t.name}<small>${t.how}</small>`;
+    b.onclick=()=>{ if(sel.has(t.id)) sel.delete(t.id); else { if(sel.size>=8) return; sel.add(t.id);} b.setAttribute('aria-pressed',sel.has(t.id)); run(); };
+    $(t.boat?'#boat':'#shore').appendChild(b);
+  }
+  for(let n=1;n<=4;n++){ const b=document.createElement('button'); b.className='num'; b.type='button'; b.textContent=n+'セット'; b.setAttribute('aria-pressed',n===N);
+    b.onclick=()=>{N=n; document.querySelectorAll('.num').forEach((x,i)=>x.setAttribute('aria-pressed',i+1===N)); run();}; $('#nums').appendChild(b); }
+}
+// --- 1本の竿でまとめたときの各要素の「外れ方」 0〜3
+function lenPen(L,t){ const d=L<t.len[0]?t.len[0]-L:L>t.len[1]?L-t.len[1]:0; return d===0?0:d<=1.5?1:d<=4?2:3; }
+function wPen(lo,t){ const hi=lo*4, a=t.w[0], b=t.w[1];
+  const ov=Math.max(0,Math.log(Math.min(hi,b))-Math.log(Math.max(lo,a))), span=Math.max(1e-6,Math.log(b)-Math.log(a));
+  if(Math.min(hi,b)>=Math.max(lo,a)){ const c=b/a<1.3?1:ov/span; return c>=0.5?0:c>=0.2?1:2; }
+  const gap=a>hi? a/hi : lo/b; return gap<2?2:3; }
+function spinPen(sz,t){ const i=SIZES.indexOf(sz), a=SIZES.indexOf(t.spin[0]), b=SIZES.indexOf(t.spin[1]); const d=i<a?a-i:i>b?i-b:0; return d===0?0:d===1?1:2; }
+function linePen(kind,pe,t){ if(t.line[0]==='any') return 0;
+  if(kind!==t.line[0]) return 1;           // 糸の種類が違う → 替えスプールで対応
+  if(kind==='nylon') return 0;
+  const d=pe<t.line[1]?t.line[1]/pe:pe>t.line[2]?pe/t.line[2]:1; return d<=1?0:d<=1.6?1:2; }
+function bestFor(ts){
+  let best=null;
+  for(let L=5;L<=17.5;L+=0.5){ const s=ts.reduce((a,t)=>a+lenPen(L,t)**2,0); if(!best||s<best.s) best={s,L}; }
+  const gm=ts.reduce((a,t)=>a+Math.log(Math.sqrt(t.w[0]*t.w[1])),0)/ts.length;   // 重さの真ん中（対数）
+  let bw=null; for(let lo=1;lo<=200;lo*=1.08){ const s=ts.reduce((a,t)=>a+wPen(lo,t)**2,0)+0.05*Math.abs(Math.log(lo*2)-gm); if(!bw||s<bw.s-1e-9) bw={s,lo}; }
+  let bz=null; for(const z of SIZES){ const s=ts.reduce((a,t)=>a+spinPen(z,t)**2,0); if(!bz||s<bz.s) bz={s,z}; }
+  const ny=ts.filter(t=>t.line[0]==='nylon').length, pe=ts.filter(t=>t.line[0]==='pe').length;
+  const kind= ny>pe?'nylon':'pe';
+  let bp=null; for(const p of PE){ const s=ts.reduce((a,t)=>a+linePen(kind,p,t)**2,0); if(!bp||s<bp.s) bp={s,p}; }
+  const L=best.L, lo=bw.lo, z=bz.z, p=bp.p;
+  const anyCast=ts.some(t=>t.cast);
+  const allBait=ts.every(t=>t.bait);
+  const res=ts.map(t=>{
+    const why=[]; let g=0;
+    const lp=lenPen(L,t); if(lp){ g=Math.max(g,lp); why.push(L>t.len[1]?`竿が長い（この釣りの目安は${t.len[0]}〜${t.len[1]}フィート）`:`竿が短い（この釣りの目安は${t.len[0]}〜${t.len[1]}フィート）`); }
+    if(t.boat && L>9){ g=Math.max(g,2); why.push('カヤック・船の上では、長い竿は扱いにくい'); }
+    const wp=wPen(lo,t); if(wp){ g=Math.max(g,wp); const heavy=Math.sqrt(t.w[0]*t.w[1])>lo*2;
+      why.push(wp===1?`ルアー・オモリ（${t.w[0]}〜${t.w[1]}g）の${heavy?'重い':'軽い'}ほうは、竿の範囲から外れる`:`ルアー・オモリ（${t.w[0]}〜${t.w[1]}g）が、竿には${heavy?'重すぎる（竿を傷める）':'軽すぎる（投げにくく、動かしにくい）'}`); }
+    if(!allBait){ const sp=spinPen(z,t); if(sp){ g=Math.max(g,sp); why.push(`リールの大きさが合わない（スピニングなら目安${t.spin[0]}〜${t.spin[1]}番）`); }
+      if(t.bait){ g=Math.max(g,1); why.push('本来はベイト（両軸）リールが向くが、スピニングでもできる'); } }
+    const lnp=linePen(kind,p,t); if(lnp){ g=Math.max(g,lnp); why.push(kind!==t.line[0]?`糸の種類が違う（この釣りは${t.line[0]==='pe'?'PE':'ナイロン'}）→ 替えスプールがあると楽`:`糸の太さが合わない（目安PE${t.line[1]}〜${t.line[2]}号）`); }
+    return {t,g,why};
+  });
+  const cost=res.reduce((a,r)=>a+r.g*r.g*10+r.why.length,0);
+  return {L,lo,z,p,kind,res,cost,anyCast,allBait};
+}
+const memo=new Map();
+function block(mask,list){ if(memo.has(mask)) return memo.get(mask); const ts=list.filter((_,i)=>mask>>i&1); const b=bestFor(ts); memo.set(mask,b); return b; }
+function partitions(n,k){ // n個を最大k個のグループへ
+  const out=[], a=new Array(n).fill(0);
+  (function rec(i,m){ if(i===n){ out.push(a.slice()); return; } for(let g=0;g<=Math.min(m,k-1);g++){ a[i]=g; rec(i+1,Math.max(m,g+1)); } })(0,0);
+  return out;
+}
+function run(){
+  const list=T.filter(t=>sel.has(t.id)); const out=$('#out'); memo.clear();
+  if(!list.length){ out.innerHTML='<p class="empty">上で、やりたい釣りを選んでください。</p>'; return; }
+  let best=null;
+  for(const pa of partitions(list.length,N)){
+    const masks={}; pa.forEach((g,i)=>{masks[g]=(masks[g]||0)|(1<<i);});
+    const bs=Object.values(masks).map(m=>block(m,list)); const c=bs.reduce((a,b)=>a+b.cost,0)+bs.length*0.01;
+    if(!best||c<best.c) best={c,bs};
+  }
+  const sets=best.bs.sort((a,b)=>b.res.length-a.res.length);
+  const used=sets.length;
+  let html=`<p class="summary">${list.length}つの釣りを、<b>${used}セット</b>でまかなう組み合わせです。${used<N?`（${N}セット用意しなくても、${used}セットで足ります）`:''}</p>`;
+  sets.forEach((s,i)=>{
+    const fit=s.res.find(r=>s.L>=r.t.len[0]&&s.L<=r.t.len[1]);
+    const rodName= fit ? fit.t.rod : s.L>=12 ? '磯竿・投げ竿' : s.L>=9.5 ? '長めのシーバスロッド・サーフ用ロッド' : s.L>=7 ? 'エギングロッド・シーバスロッド' : s.res.every(r=>r.t.boat) ? '船・カヤック用のロッド' : 'ライトゲーム用ロッド';
+    const reel= s.allBait ? 'ベイト（両軸）リール 150〜300番クラス' : `スピニング ${s.z}番前後`;
+    const line= s.kind==='pe' ? `PE ${s.p}号前後` : 'ナイロン 2〜3号';
+    const mixed= s.res.some(r=>r.t.line[0]!=='any' && r.t.line[0]!==s.kind);
+    html+=`<div class="set"><div class="set-h"><b>セット${i+1}</b><span>${s.res.length}つの釣り</span></div>
+    <dl class="spec"><dt>竿</dt><dd>長さ ${s.L}フィート（約${ft2m(s.L)}m）・ルアーやオモリ ${Math.round(s.lo)}〜${Math.round(s.lo*4)}g<small>近い竿：${rodName}</small></dd>
+    <dt>リール</dt><dd>${reel}</dd><dt>糸</dt><dd>${line}${mixed?`<small>＋替えスプールに${s.kind==='pe'?'ナイロン2〜3号':'PE'}</small>`:''}</dd></dl><div class="tg">`;
+    s.res.sort((a,b)=>a.g-b.g).forEach(r=>{
+      const mk=['◎','○','△','✕'][r.g];
+      html+=`<div class="tgt"><div class="g g${r.g}">${mk}</div><div><b>${r.t.name}</b>（${r.t.how}）${r.t.page?` <a href="../zukan/shikake/${r.t.page}.html">仕掛け</a>`:''}<p>${r.why.length?r.why.join('。<br>')+'。':'この竿でちょうどいい。'}</p></div></div>`;
+    });
+    html+='</div></div>';
+  });
+  out.innerHTML=html;
+}
+chips(); run();
+</script>
+</body>
+</html>

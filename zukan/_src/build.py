@@ -89,6 +89,7 @@ idx = head('富山湾の魚図鑑｜16種の時期・すみか・釣り方（岸
 </div></div>
 <main>
   <a class="cta" style="background:#fff;color:var(--kon);border:2px solid var(--kon);padding:10px;margin:0 0 14px" href="shikake/">🎣 釣り方別の仕掛け（図解・代用できる竿も）</a>
+  <a class="cta" style="background:#fff;color:var(--kon);border:2px solid var(--kon);padding:10px;margin:0 0 14px" href="../tackle/">🧰 タックルの組み合わせ計画（竿の本数から最適なセットを出す）</a>
   <div class="grid">{cards}</div>
   <p class="cap" style="margin-top:14px">富山湾の数字は、富山県水産研究所の論文や漁況報告から。漁獲量（網の水揚げ）は、釣れやすさとは別物です。</p>
   <a class="cta" href="../">今日の「釣れそう度」を釣果予報で見る →</a>
