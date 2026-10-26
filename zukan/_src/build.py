@@ -3,6 +3,7 @@ import re, html, urllib.parse, pathlib, sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'zukan'/'_src'))
 from fish import FISH, KYOKYO
+RIG={'buri':[('jigging','ジギング')],'kobuRI':[('jigging','ジギング')],'hata':[('anatsuri','穴釣り')],'flat':[('surf','サーフのルアー')],'aji':[('sabiki','サビキ'),('light','アジング')],'kisu':[('nage','ちょい投げ・投げ釣り')],'suzuki':[('seabass','シーバスのルアー')],'chinu':[('uki','ウキ釣り')],'kamasu':[('sabiki','サビキ')],'mebaru':[('light','メバリング'),('anatsuri','穴釣り')],'kawahagi':[('kawahagi','カワハギ釣り')],'maika':[('eging','エギング')],'akamutsu':[('jigging','ジギング')]}
 src = (ROOT/'index.html').read_text(encoding='utf-8')
 def tackle(tid):
     m = re.search(r"id:'%s'.*?tackle:'(.*?)',\s*tips:'(.*?)'" % re.escape(tid), src, re.S)
@@ -68,6 +69,7 @@ for f in FISH:
     <h3>🏖️ 岸から（堤防・浜・磯）</h3>
     <p>{f.get("shore","")}</p>
     <p class="cap">※一般的な釣り方の目安。岸から釣るときは、立入禁止の場所に入らず、ライフジャケットを着けてください。</p>
+    {"".join(f'<a class="cta" style="background:#fff;color:var(--kon);border:2px solid var(--kon);padding:10px;margin:8px 0" href="shikake/{k}.html">🎣 {n}の仕掛けを図で見る</a>' for k,n in RIG.get(f["id"],[])) or '<a class="cta" style="background:#fff;color:var(--kon);border:2px solid var(--kon);padding:10px;margin:8px 0" href="shikake/">🎣 釣り方別の仕掛け一覧</a>'}
   </section>
   <section><h2>釣れたら・注意</h2><ul>{f["care"]}</ul></section>
   {f.get("extra", "")}
@@ -86,6 +88,7 @@ idx = head('富山湾の魚図鑑｜16種の時期・すみか・釣り方（岸
   <p class="sub">岸からも、カヤックからも狙える16種。魚拓はイラスト（AIで作成）、中身は出典つき。</p>
 </div></div>
 <main>
+  <a class="cta" style="background:#fff;color:var(--kon);border:2px solid var(--kon);padding:10px;margin:0 0 14px" href="shikake/">🎣 釣り方別の仕掛け（図解・代用できる竿も）</a>
   <div class="grid">{cards}</div>
   <p class="cap" style="margin-top:14px">富山湾の数字は、富山県水産研究所の論文や漁況報告から。漁獲量（網の水揚げ）は、釣れやすさとは別物です。</p>
   <a class="cta" href="../">今日の「釣れそう度」を釣果予報で見る →</a>
