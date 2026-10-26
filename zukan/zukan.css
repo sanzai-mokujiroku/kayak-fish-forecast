@@ -38,3 +38,4 @@ footer{max-width:680px;margin:0 auto;padding:0 16px 40px;font-size:13px;color:va
 .note b.t{display:block;color:#8a5a00;margin-bottom:2px}
 .note ul{margin:4px 0 0}
 .hero .kana{margin:2px 0 0;color:#cfe0f2;font-size:14px}
+h3{font-size:15px;margin:12px 0 2px;color:var(--ink)}

@@ -7,7 +7,7 @@ src = (ROOT/'index.html').read_text(encoding='utf-8')
 def tackle(tid):
     m = re.search(r"id:'%s'.*?tackle:'(.*?)',\s*tips:'(.*?)'" % re.escape(tid), src, re.S)
     return (m.group(1), m.group(2)) if m else ('', '')
-names = ''.join(f['name'] for f in FISH) + '富山湾の魚図鑑カヤックで狙える'
+names = ''.join(f['name'] for f in FISH) + '富山湾の魚図鑑'
 FONT = 'https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@800&display=swap&text=' + urllib.parse.quote(''.join(sorted(set(names))))
 NOTE = '''<div class="note"><b class="t">⚠️ 漁獲量＝釣れやすさ、ではない</b>
 <ul><li>漁況報告の数字は、漁師さんの網（主に定置網）に入った量。<b>釣り人が釣った数ではない。</b></li>
@@ -62,9 +62,12 @@ for f in FISH:
     {NOTE if uses_kyokyo else ""}
   </section>
   <section><h2>どこにいる？</h2>{f["where"]}</section>
-  <section><h2>カヤックでの狙い方（目安）</h2>
+  <section><h2>釣り方（目安）</h2>
+    <h3>🛶 カヤック・船から</h3>
     <p>{tk}</p><p>{tips}</p>
-    <p class="cap">※釣果予報の「道具の目安」と同じ内容。一般的な釣り方の目安です。</p>
+    <h3>🏖️ 岸から（堤防・浜・磯）</h3>
+    <p>{f.get("shore","")}</p>
+    <p class="cap">※一般的な釣り方の目安。岸から釣るときは、立入禁止の場所に入らず、ライフジャケットを着けてください。</p>
   </section>
   <section><h2>釣れたら・注意</h2><ul>{f["care"]}</ul></section>
   {f.get("extra", "")}
@@ -72,15 +75,15 @@ for f in FISH:
   <section class="src"><h2>出典</h2><ul>{srcs}</ul>
     <p class="cap">確かめられなかったことは書いていません。間違いに気づいたら教えてください。</p></section>
 </main>'''
-    title = f'富山湾の{full}｜時期・すみか・カヤックでの狙い方'
-    desc = f'{full}の生態（産卵期・すみか）と、富山湾での獲れる時期、カヤックでの狙い方・注意点を出典つきでまとめました。'
+    title = f'富山湾の{full}｜時期・すみか・釣り方（岸から・カヤック）'
+    desc = f'{full}の生態（産卵期・すみか）と、富山湾での獲れる時期、岸から・カヤックからの釣り方と注意点を出典つきでまとめました。'
     (ROOT/'zukan'/f'{f["id"]}.html').write_text(head(title, desc, f'{f["id"]}.html', f'gyotaku/{f["id"]}.webp') + body + FOOT, encoding='utf-8')
 # 一覧
 cards = ''.join(f'<a class="fish" href="{f["id"]}.html"><img src="../gyotaku/{f["id"]}.webp" alt=""><span>{f["name"]}</span><small>{f["sub"].split("。")[0]}</small></a>' for f in FISH)
-idx = head('富山湾の魚図鑑｜カヤックで狙える16種の時期・すみか・狙い方', '富山湾でカヤックから狙える魚16種を、カラー魚拓つきで。富山県水産研究所の資料など出典つきで、時期・すみか・狙い方をまとめました。', '', 'gyotaku/madai.webp') + f'''<div class="hero"><div class="wrap">
+idx = head('富山湾の魚図鑑｜16種の時期・すみか・釣り方（岸から・カヤック）', '富山湾で岸やカヤックから狙える魚16種を、カラー魚拓つきで。富山県水産研究所の資料など出典つきで、時期・すみか・狙い方をまとめました。', '', 'gyotaku/madai.webp') + f'''<div class="hero"><div class="wrap">
   <div class="crumb"><a href="../">釣果予報</a> › 富山湾の魚図鑑</div>
   <h1 style="margin-top:10px">富山湾の魚図鑑</h1>
-  <p class="sub">カヤックで狙える16種。魚拓はイラスト（AIで作成）、中身は出典つき。</p>
+  <p class="sub">岸からも、カヤックからも狙える16種。魚拓はイラスト（AIで作成）、中身は出典つき。</p>
 </div></div>
 <main>
   <div class="grid">{cards}</div>

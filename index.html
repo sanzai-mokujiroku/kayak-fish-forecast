@@ -364,7 +364,7 @@
   <p class="credit">
     気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
     潮汐データ：<a href="https://tide736.net/" target="_blank" rel="noopener">tide736.net</a>（気象庁 潮位表をもとに算出）<br>
-    <span style="opacity:.7">版 2026-10-26 v18（富山湾の魚図鑑を追加・アオリイカの旬を富山湾のデータに合わせて修正）</span>
+    <span style="opacity:.7">版 2026-10-26 v19（魚図鑑に岸からの釣り方・マイカ→ケンサキイカに名前を統一）</span>
   </p>
 </div>
 
@@ -533,7 +533,7 @@ const SPECIES = [
     tackle:'カワハギ仕掛け＋<b>オモリ20〜30号</b>。エサはアサリなど。小さいアタリを取る釣り。',
     tips:'砂地〜根周りをエサ釣りで。秋〜初冬は肝パン。エサ取り名人、日中の宝探し。'
   },
-  { id:'maika', name:'マイカ（ケンサキ）', emoji:'🌙',
+  { id:'maika', name:'ケンサキイカ', emoji:'🌙',
     temp:{ideal:[18,25], ok:[15,27]},
     depth:'mid',
     season:{1:.2,2:.2,3:.3,4:.4,5:.5,6:.8,7:1,8:1,9:.9,10:.6,11:.3,12:.2},
@@ -807,7 +807,7 @@ const LOG_ALIASES = {
   kamasu:['カマス'],
   mebaru:['メバル'],
   kawahagi:['カワハギ','ウマヅラ','ハゲ'],
-  maika:['マイカ','ケンサキ','剣先','シロイカ','アカイカ'],
+  maika:['ケンサキ','剣先','シロイカ','アカイカ'],
   akamutsu:['アカムツ','ノドグロ']
 };
 let TRIPS = [];
