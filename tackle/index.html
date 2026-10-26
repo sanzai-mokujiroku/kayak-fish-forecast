@@ -57,7 +57,7 @@
   </section>
   <section id="mainsec" hidden>
     <h2>メインにしたい釣り（任意）</h2>
-    <p class="cap" style="margin-top:0">選ぶと、竿の目安をその釣りに寄せます。複数選べます。</p>
+    <p class="cap" style="margin-top:0">選ぶと、1セット目をその釣りにぴったりの竿にします。複数選ぶと、全部を1セット目にまとめます。</p>
     <div class="chips" id="mains"></div>
   </section>
   <section>
@@ -71,7 +71,7 @@
   </section>
   <section class="src">
     <h2>判定のしくみと出典</h2>
-    <p class="cap">メインに選んだ釣りは、判定で6倍の重みを付けています（ほかの釣りより、メインの◎を優先）。釣りごとに「竿の長さ」「ルアー・オモリの重さ」「リールの種類と大きさ」「糸の種類と太さ」の目安を持たせ、1本の竿でまとめたときにどれだけ外れるかで◎〜✕を出しています。竿1本で扱えるルアーの重さは、だいたい一番軽いものの4倍くらいまでとして計算しています。選んだ釣りをセットに振り分ける全部の組み合わせを試して、無理が一番少ないものを出しています。</p>
+    <p class="cap">メインを選ぶと、1セット目の竿・リール・糸はメインの釣りだけで決め、ほかの釣りはその竿に合うかで判定します。釣りごとに「竿の長さ」「ルアー・オモリの重さ」「リールの種類と大きさ」「糸の種類と太さ」の目安を持たせ、1本の竿でまとめたときにどれだけ外れるかで◎〜✕を出しています。竿1本で扱えるルアーの重さは、だいたい一番軽いものの4倍くらいまでとして計算しています。選んだ釣りをセットに振り分ける全部の組み合わせを試して、無理が一番少ないものを出しています。</p>
     <ul>
       <li><a href="https://www.daiwa.com/jp/beginner/place/">ダイワ「初心者のための釣り入門」</a>（エギング・サビキ・アジング/メバリング・穴釣り・投げ釣り・シーバス・サーフ・ウキ釣り・カワハギ）</li>
       <li>ティップラン：<a href="https://corp.tacklenote.jp/columns/?p=108082">タックルノート</a>・<a href="https://tsurihack.com/6099">TSURI HACK</a></li>
@@ -140,17 +140,19 @@ function linePen(kind,pe,t){ if(t.line[0]==='any') return 0;
   if(kind==='nylon') return 0;
   const d=pe<t.line[1]?t.line[1]/pe:pe>t.line[2]?pe/t.line[2]:1; return d<=1?0:d<=1.6?1:2; }
 function bestFor(ts){
+  // メインが入っているセットは、竿・リール・糸をメインだけで決める（ほかの釣りはそれに合わせて判定）
+  const mainTs=ts.filter(t=>mains.has(t.id)); const base=mainTs.length?mainTs:ts;
   let best=null;
-  for(let L=5;L<=17.5;L+=0.5){ const s=ts.reduce((a,t)=>a+W(t)*lenPen(L,t)**2,0); if(!best||s<best.s) best={s,L}; }
-  const gm=ts.reduce((a,t)=>a+W(t)*Math.log(Math.sqrt(t.w[0]*t.w[1])),0)/ts.reduce((a,t)=>a+W(t),0);   // 重さの真ん中（対数）
-  let bw=null; for(let lo=1;lo<=200;lo*=1.08){ const s=ts.reduce((a,t)=>a+W(t)*wPen(lo,t)**2,0)+0.05*Math.abs(Math.log(lo*2)-gm); if(!bw||s<bw.s-1e-9) bw={s,lo}; }
-  let bz=null; for(const z of SIZES){ const s=ts.reduce((a,t)=>a+W(t)*spinPen(z,t)**2,0); if(!bz||s<bz.s) bz={s,z}; }
-  const ny=ts.filter(t=>t.line[0]==='nylon').reduce((a,t)=>a+W(t),0), pe=ts.filter(t=>t.line[0]==='pe').reduce((a,t)=>a+W(t),0);
+  for(let L=5;L<=17.5;L+=0.5){ const s=base.reduce((a,t)=>a+W(t)*lenPen(L,t)**2,0); if(!best||s<best.s) best={s,L}; }
+  const gm=base.reduce((a,t)=>a+W(t)*Math.log(Math.sqrt(t.w[0]*t.w[1])),0)/base.reduce((a,t)=>a+W(t),0);   // 重さの真ん中（対数）
+  let bw=null; for(let lo=1;lo<=200;lo*=1.08){ const s=base.reduce((a,t)=>a+W(t)*wPen(lo,t)**2,0)+0.05*Math.abs(Math.log(lo*2)-gm); if(!bw||s<bw.s-1e-9) bw={s,lo}; }
+  let bz=null; for(const z of SIZES){ const s=base.reduce((a,t)=>a+W(t)*spinPen(z,t)**2,0); if(!bz||s<bz.s) bz={s,z}; }
+  const ny=base.filter(t=>t.line[0]==='nylon').reduce((a,t)=>a+W(t),0), pe=base.filter(t=>t.line[0]==='pe').reduce((a,t)=>a+W(t),0);
   const kind= ny>pe?'nylon':'pe';
-  let bp=null; for(const p of PE){ const s=ts.reduce((a,t)=>a+W(t)*linePen(kind,p,t)**2,0); if(!bp||s<bp.s) bp={s,p}; }
+  let bp=null; for(const p of PE){ const s=base.reduce((a,t)=>a+W(t)*linePen(kind,p,t)**2,0); if(!bp||s<bp.s) bp={s,p}; }
   const L=best.L, lo=bw.lo, z=bz.z, p=bp.p;
   const anyCast=ts.some(t=>t.cast);
-  const allBait=ts.every(t=>t.bait);
+  const allBait=base.every(t=>t.bait);
   const res=ts.map(t=>{
     const why=[]; let g=0;
     const lp=lenPen(L,t); if(lp){ g=Math.max(g,lp); why.push(L>t.len[1]?`竿が長い（この釣りの目安は${t.len[0]}〜${t.len[1]}フィート）`:`竿が短い（この釣りの目安は${t.len[0]}〜${t.len[1]}フィート）`); }
@@ -159,6 +161,7 @@ function bestFor(ts){
       why.push(wp===1?`ルアー・オモリ（${t.w[0]}〜${t.w[1]}g）の${heavy?'重い':'軽い'}ほうは、竿の範囲から外れる`:`ルアー・オモリ（${t.w[0]}〜${t.w[1]}g）が、竿には${heavy?'重すぎる（竿を傷める）':'軽すぎる（投げにくく、動かしにくい）'}`); }
     if(!allBait){ const sp=spinPen(z,t); if(sp){ g=Math.max(g,sp); why.push(`リールの大きさが合わない（スピニングなら目安${t.spin[0]}〜${t.spin[1]}番）`); }
       if(t.bait){ g=Math.max(g,1); why.push('本来はベイト（両軸）リールが向くが、スピニングでもできる'); } }
+    else if(!t.bait){ g=Math.max(g,t.cast?2:1); why.push(t.cast?'ベイト（両軸）リールでは、この釣りの軽いルアーは投げにくい':'本来はスピニングリール向きの釣り'); }
     const lnp=linePen(kind,p,t); if(lnp){ g=Math.max(g,lnp); why.push(kind!==t.line[0]?`糸の種類が違う（この釣りは${t.line[0]==='pe'?'PE':'ナイロン'}）→ 替えスプールがあると楽`:`糸の太さが合わない（目安PE${t.line[1]}〜${t.line[2]}号）`); }
     return {t,g,why};
   });
@@ -174,10 +177,12 @@ function partitions(n,k){ // n個を最大k個のグループへ
 }
 function run(){
   const list=T.filter(t=>sel.has(t.id)); const out=$('#out'); memo.clear();
-  const mainNote = mains.size ? `メイン（${T.filter(t=>mains.has(t.id)).map(t=>t.how).join('・')}）に合わせて、竿の目安を寄せています。` : '';
+  const mainNote = mains.size ? `1セット目は、メイン（${T.filter(t=>mains.has(t.id)).map(t=>t.how).join('・')}）にぴったりの竿にしています。ほかの釣りは、その竿で無理が少ないものだけ一緒にしています。` : '';
   if(!list.length){ out.innerHTML='<p class="empty">上で、やりたい釣りを選んでください。</p>'; return; }
   let best=null;
+  const mainIdx=list.map((t,i)=>mains.has(t.id)?i:-1).filter(i=>i>=0);
   for(const pa of partitions(list.length,N)){
+    if(mainIdx.length && mainIdx.some(i=>pa[i]!==pa[mainIdx[0]])) continue;   // メインは全部同じ（1セット目の）竿
     const masks={}; pa.forEach((g,i)=>{masks[g]=(masks[g]||0)|(1<<i);});
     const bs=Object.values(masks).map(m=>block(m,list)); const c=bs.reduce((a,b)=>a+b.cost,0)+bs.length*0.01;
     if(!best||c<best.c) best={c,bs};
