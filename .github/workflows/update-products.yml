@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: "0 21 * * 0"   # 日曜21:00 UTC = 月曜6:00（日本時間）
   workflow_dispatch: {}
+  push:                    # 製品リストや取得プログラムを直したときも、すぐ数字を埋め直す
+    branches: [main]
+    paths: ["tackle/products.json", "tackle/update_products.py"]
 permissions:
   contents: write
 jobs:
