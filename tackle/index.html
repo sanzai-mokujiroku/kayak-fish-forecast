@@ -71,7 +71,7 @@
   </section>
   <section class="src">
     <h2>判定のしくみと出典</h2>
-    <p class="cap">メインを選ぶと、1セット目の竿・リール・糸はメインの釣りだけで決め、ほかの釣りはその竿に合うかで判定します。釣りごとに「竿の長さ」「ルアー・オモリの重さ」「リールの種類と大きさ」「糸の種類と太さ」の目安を持たせ、1本の竿でまとめたときにどれだけ外れるかで◎〜✕を出しています。竿1本で扱えるルアーの重さは、だいたい一番軽いものの4倍くらいまでとして計算しています。選んだ釣りをセットに振り分ける全部の組み合わせを試して、無理が一番少ないものを出しています。</p>
+    <p class="cap">ベイトとスピニングは、リールだけでなく竿も別物（ガイドの向きや大きさが違う）なので、1つのセットの中では入れ替えられないものとして判定しています。調子は、資料で向き不向きがはっきりしている釣り（エギング・ティップラン・カワハギ＝先調子、タイラバ＝胴調子）だけ判定に入れています。メインを選ぶと、1セット目の竿・リール・糸はメインの釣りだけで決め、ほかの釣りはその竿に合うかで判定します。釣りごとに「竿の長さ」「ルアー・オモリの重さ」「リールの種類と大きさ」「糸の種類と太さ」の目安を持たせ、1本の竿でまとめたときにどれだけ外れるかで◎〜✕を出しています。竿1本で扱えるルアーの重さは、だいたい一番軽いものの4倍くらいまでとして計算しています。選んだ釣りをセットに振り分ける全部の組み合わせを試して、無理が一番少ないものを出しています。</p>
     <ul>
       <li><a href="https://www.daiwa.com/jp/beginner/place/">ダイワ「初心者のための釣り入門」</a>（エギング・サビキ・アジング/メバリング・穴釣り・投げ釣り・シーバス・サーフ・ウキ釣り・カワハギ）</li>
       <li>ティップラン：<a href="https://corp.tacklenote.jp/columns/?p=108082">タックルノート</a>・<a href="https://tsurihack.com/6099">TSURI HACK</a></li>
@@ -88,7 +88,7 @@
 // len: 竿の長さ[フィート]  w: ルアー・オモリ[g]  line: 'pe'|'nylon'|'any' と号数  reel: spin=スピニング番手 / bait=ベイトが本来向く
 // cast: 投げる釣りか  boat: カヤック・船の釣りか  rod: 本来の竿の名前  page: 仕掛けページ
 const T = [
- {id:'eging',   name:'アオリイカ', how:'エギング',       boat:0, len:[7,9],    w:[10,20],  line:['pe',0.6,1],   spin:[2000,3000], bait:0, cast:1, rod:'エギングロッド', page:'eging'},
+ {id:'eging', act:'fast',   name:'アオリイカ', how:'エギング',       boat:0, len:[7,9],    w:[10,20],  line:['pe',0.6,1],   spin:[2000,3000], bait:0, cast:1, rod:'エギングロッド', page:'eging'},
  {id:'sabiki',  name:'アジ・サバ', how:'サビキ',         boat:0, len:[12,15],  w:[19,56],  line:['nylon',2,3], spin:[2500,3000], bait:0, cast:0, rod:'磯竿・投げ竿（万能竿でも可）', page:'sabiki'},
  {id:'ajing',   name:'アジ・メバル', how:'アジング・メバリング', boat:0, len:[5,7], w:[1,3], line:['pe',0.2,0.4], spin:[1000,2500], bait:0, cast:1, rod:'ライトソルト用ロッド', page:'light'},
  {id:'ana',     name:'カサゴ', how:'穴釣り',            boat:0, len:[6,15],   w:[11,38],  line:['nylon',2,3], spin:[2000,2500], bait:0, cast:0, rod:'磯竿・投げ竿・ルアーロッド', page:'anatsuri'},
@@ -97,10 +97,10 @@ const T = [
  {id:'surf',    name:'ヒラメ', how:'サーフのルアー',      boat:0, len:[9,11],   w:[14,40],  line:['pe',0.8,1.2], spin:[4000,5000], bait:0, cast:1, rod:'サーフ用ルアーロッド', page:'surf'},
  {id:'uki',     name:'クロダイ', how:'ウキ釣り',         boat:0, len:[14,17.5],w:[1,10],   line:['nylon',2,3], spin:[2500,3000], bait:0, cast:1, rod:'磯竿 1〜1.5号', page:'uki'},
  {id:'shorejig',name:'青物', how:'ショアジギング',        boat:0, len:[9,11],   w:[15,60],  line:['pe',1,2],    spin:[4000,5000], bait:0, cast:1, rod:'ショアジギングロッド', page:'jigging'},
- {id:'tiprun',  name:'アオリイカ', how:'ティップラン',     boat:1, len:[6,7],    w:[30,100], line:['pe',0.6,1],  spin:[2500,3000], bait:0, cast:0, rod:'ティップラン専用ロッド', page:'eging'},
- {id:'tairaba', name:'マダイ', how:'タイラバ',            boat:1, len:[5.5,7],  w:[60,120], line:['pe',0.6,1],  spin:[3000,4000], bait:1, cast:0, rod:'タイラバロッド', page:null},
+ {id:'tiprun', act:'fast',  name:'アオリイカ', how:'ティップラン',     boat:1, len:[6,7],    w:[30,100], line:['pe',0.6,1],  spin:[2500,3000], bait:0, cast:0, rod:'ティップラン専用ロッド', page:'eging'},
+ {id:'tairaba', act:'slow', name:'マダイ', how:'タイラバ',            boat:1, len:[5.5,7],  w:[60,120], line:['pe',0.6,1],  spin:[3000,4000], bait:1, cast:0, rod:'タイラバロッド', page:null},
  {id:'lj',      name:'青物・根魚', how:'ライトジギング',   boat:1, len:[6,6.6],  w:[60,150], line:['pe',1.5,3],  spin:[4000,5000], bait:1, cast:0, rod:'ライトジギングロッド', page:'jigging'},
- {id:'kawahagi',name:'カワハギ', how:'カワハギ釣り',      boat:1, len:[6,7],    w:[94,113], line:['pe',0.8,1],  spin:[2500,3000], bait:1, cast:0, rod:'カワハギ竿（先調子）', page:'kawahagi'},
+ {id:'kawahagi', act:'fast',name:'カワハギ', how:'カワハギ釣り',      boat:1, len:[6,7],    w:[94,113], line:['pe',0.8,1],  spin:[2500,3000], bait:1, cast:0, rod:'カワハギ竿（先調子）', page:'kawahagi'},
  {id:'deep',    name:'アカムツ', how:'深場のジギング',    boat:1, len:[6,7],    w:[130,200],line:['pe',0.8,1.2],spin:[4000,5000], bait:1, cast:0, rod:'深場用（スロー系）ロッド', page:'jigging'},
 ];
 const SIZES=[1000,2000,2500,3000,4000,5000,6000];
@@ -153,6 +153,10 @@ function bestFor(ts){
   const L=best.L, lo=bw.lo, z=bz.z, p=bp.p;
   const anyCast=ts.some(t=>t.cast);
   const allBait=base.every(t=>t.bait);
+  // 調子：先調子/胴調子の向き不向きが資料にある釣りだけで決める
+  const fw=base.filter(t=>t.act==='fast').reduce((a,t)=>a+W(t),0), sw=base.filter(t=>t.act==='slow').reduce((a,t)=>a+W(t),0);
+  const fa=ts.filter(t=>t.act==='fast').length, sa=ts.filter(t=>t.act==='slow').length;
+  const act = fw||sw ? (fw>=sw?'fast':'slow') : (fa>sa?'fast':sa>fa?'slow':null);   // 決め手がなければ「どちらでも」
   const res=ts.map(t=>{
     const why=[]; let g=0;
     const lp=lenPen(L,t); if(lp){ g=Math.max(g,lp); why.push(L>t.len[1]?`竿が長い（この釣りの目安は${t.len[0]}〜${t.len[1]}フィート）`:`竿が短い（この釣りの目安は${t.len[0]}〜${t.len[1]}フィート）`); }
@@ -160,13 +164,15 @@ function bestFor(ts){
     const wp=wPen(lo,t); if(wp){ g=Math.max(g,wp); const heavy=Math.sqrt(t.w[0]*t.w[1])>lo*2;
       why.push(wp===1?`ルアー・オモリ（${t.w[0]}〜${t.w[1]}g）の${heavy?'重い':'軽い'}ほうは、竿の範囲から外れる`:`ルアー・オモリ（${t.w[0]}〜${t.w[1]}g）が、竿には${heavy?'重すぎる（竿を傷める）':'軽すぎる（投げにくく、動かしにくい）'}`); }
     if(!allBait){ const sp=spinPen(z,t); if(sp){ g=Math.max(g,sp); why.push(`リールの大きさが合わない（スピニングなら目安${t.spin[0]}〜${t.spin[1]}番）`); }
-      if(t.bait){ g=Math.max(g,1); why.push('本来はベイト（両軸）リールが向くが、スピニングでもできる'); } }
-    else if(!t.bait){ g=Math.max(g,t.cast?2:1); why.push(t.cast?'ベイト（両軸）リールでは、この釣りの軽いルアーは投げにくい':'本来はスピニングリール向きの釣り'); }
+      if(t.bait){ g=Math.max(g,1); why.push('本来はベイトの竿とリールが向くが、スピニングの竿とリールでもできる'); } }
+    else if(!t.bait){ const light=t.w[1]<=20; g=Math.max(g,t.cast?(light?3:2):1);
+      why.push(t.cast?(light?'ベイトの竿とリールでは、この軽さのエギ・ルアーはまず投げられない（竿もリールもスピニングとは別物）':'ベイトの竿とリールで投げるのは、糸が絡みやすく初心者には難しい'):'本来はスピニングの竿とリール向きの釣り（ベイトでもできなくはない）'); }
+    if(t.act && act && t.act!==act){ g=Math.max(g,1); why.push(t.act==='fast'?'この釣りは先調子（竿の先だけ曲がる）が向くが、この竿は胴調子寄り':'この釣りは胴調子（柔らかく全体が曲がる）が向くが、この竿は先調子寄り'); }
     const lnp=linePen(kind,p,t); if(lnp){ g=Math.max(g,lnp); why.push(kind!==t.line[0]?`糸の種類が違う（この釣りは${t.line[0]==='pe'?'PE':'ナイロン'}）→ 替えスプールがあると楽`:`糸の太さが合わない（目安PE${t.line[1]}〜${t.line[2]}号）`); }
     return {t,g,why};
   });
   const cost=res.reduce((a,r)=>a+W(r.t)*(r.g*r.g*10+r.why.length),0);
-  return {L,lo,z,p,kind,res,cost,anyCast,allBait};
+  return {L,lo,z,p,kind,res,cost,anyCast,allBait,act};
 }
 const memo=new Map();
 function block(mask,list){ if(memo.has(mask)) return memo.get(mask); const ts=list.filter((_,i)=>mask>>i&1); const b=bestFor(ts); memo.set(mask,b); return b; }
@@ -194,11 +200,13 @@ function run(){
   sets.forEach((s,i)=>{
     const fits=s.res.filter(r=>s.L>=r.t.len[0]&&s.L<=r.t.len[1]); const fit=fits.find(r=>mains.has(r.t.id))||fits[0];
     const rodName= fit ? fit.t.rod : s.L>=12 ? '磯竿・投げ竿' : s.L>=9.5 ? '長めのシーバスロッド・サーフ用ロッド' : s.L>=7 ? 'エギングロッド・シーバスロッド' : s.res.every(r=>r.t.boat) ? '船・カヤック用のロッド' : 'ライトゲーム用ロッド';
-    const reel= s.allBait ? 'ベイト（両軸）リール 150〜300番クラス' : `スピニング ${s.z}番前後`;
+    const reel= s.allBait ? 'ベイト（両軸）リール 150〜300番クラス<small>竿もベイト用（スピニング用とは別物）</small>' : `スピニング ${s.z}番前後<small>竿もスピニング用</small>`;
+    const actTxt= s.act==='fast'?'先調子（竿の先が曲がる・感度とハリ重視）':s.act==='slow'?'胴調子（全体が柔らかく曲がる）':'どちらでも';
     const line= s.kind==='pe' ? `PE ${s.p}号前後` : 'ナイロン 2〜3号';
-    const mixed= s.res.some(r=>r.t.line[0]!=='any' && r.t.line[0]!==s.kind);
+    const mixed= s.res.some(r=>r.t.line[0]!=='any' && r.t.line[0]!==s.kind && r.g<3);
     html+=`<div class="set"><div class="set-h"><b>セット${i+1}${hasMain(s)?'<span class="badge">メイン用</span>':''}</b><span>${s.res.length}つの釣り</span></div>
     <dl class="spec"><dt>竿</dt><dd>長さ ${s.L}フィート（約${ft2m(s.L)}m）・ルアーやオモリ ${Math.round(s.lo)}〜${Math.round(s.lo*4)}g<small>近い竿：${rodName}</small></dd>
+    <dt>調子</dt><dd>${actTxt}</dd>
     <dt>リール</dt><dd>${reel}</dd><dt>糸</dt><dd>${line}${mixed?`<small>＋替えスプールに${s.kind==='pe'?'ナイロン2〜3号':'PE'}</small>`:''}</dd></dl><div class="tg">`;
     s.res.sort((a,b)=>(mains.has(b.t.id)-mains.has(a.t.id))||(a.g-b.g)).forEach(r=>{
       const mk=['◎','○','△','✕'][r.g];
