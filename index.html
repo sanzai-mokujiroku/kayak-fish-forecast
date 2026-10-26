@@ -251,21 +251,82 @@
   .sisters-row a{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#1c2733;font-size:12px;font-weight:700}
   .sisters-row img{width:58px;height:58px;border-radius:14px;box-shadow:0 2px 6px rgba(12,40,79,.25)}
   .sisters .blog-link{display:inline-block;margin-top:16px;padding:10px 18px;border-radius:999px;background:#0c284f;color:#fff;text-decoration:none;font-size:12.5px;font-weight:700}
+
+  /* ===== 2026-10-27 作り直し（出艇判断と同じ考え方）===== */
+  :root{--ground:#f3f5f8;--surface:#fff;--border:#e2e7ed;--rule:#edf1f5;--control:#cfd6de;--text:#0f1d2e;--muted:#536170;
+    --bg:var(--ground);--card:var(--surface);--ink:var(--text);--line:var(--border);--r-card:10px}
+  body{background:var(--ground);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",Meiryo,sans-serif;padding-top:0}
+  .num{font-variant-numeric:tabular-nums}
+  button{touch-action:manipulation}
+  button:focus-visible,select:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--kon);outline-offset:2px}
+  .topbar{background:var(--kon);color:#fff;padding:calc(env(safe-area-inset-top) + 10px) 16px 10px}
+  .bar-in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:10px}
+  .mark{width:30px;height:30px;border-radius:8px;flex:none}
+  .topbar h1{font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;font-weight:800;font-size:19px;margin:0;letter-spacing:.04em;flex:1;color:#fff}
+  .topbar h1 small{display:block;font-family:-apple-system,"Hiragino Sans",sans-serif;font-weight:500;font-size:11px;color:#b9c8da;letter-spacing:0;margin-top:1px}
+  .barbtn{background:transparent;border:1px solid #3c5f8c;color:#fff;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+  .wrap{padding:12px 16px 40px}
+  .locbar{margin:0 0 12px}
+  .locbtn{border-color:var(--control);color:var(--text)}
+  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;background:#e6ebf0;border-radius:8px;padding:3px;margin:0 0 8px}
+  .tabs button{border:0;background:transparent;border-radius:6px;padding:7px 2px;font-size:13.5px}
+  .tabs button.active{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(15,29,46,.08)}
+  .tabs button.active small{color:var(--muted)}
+  .scopes{margin:0 0 12px;gap:4px}
+  .scopes button{border-radius:999px;padding:5px 4px;font-size:12.5px;border-color:var(--control)}
+  .scopes button.active{background:var(--text);border-color:var(--text);color:#fff}
+  /* 海況：数字の列 */
+  .env{border-radius:var(--r-card);box-shadow:none;padding:0;overflow:hidden}
+  .env h2{font-size:15px;padding:12px 14px 0;margin:0 0 8px}
+  .env h2 .stamp{font-weight:500}
+  .env-grid{grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule)}
+  .env-cell{padding:8px 12px;border-left:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .env-cell:nth-child(3n+1){border-left:0}
+  .env-cell .v{font-size:16px;font-variant-numeric:tabular-nums}
+  .sst .v{color:var(--text)}
+  .safety{margin:0;padding:10px 14px;border-top:0}
+  .safety .pill{border-radius:999px}
+  @media (max-width:400px){ .env-grid{grid-template-columns:repeat(2,1fr)} .env-cell:nth-child(3n+1){border-left:1px solid var(--rule)} .env-cell:nth-child(2n+1){border-left:0} }
+  /* 今日いちばんの魚：色の面 */
+  .best{display:flex;align-items:center;gap:12px;background:var(--kon);color:#fff;border-radius:var(--r-card);padding:14px 14px 14px 16px;margin:0 0 14px}
+  .best.ref{background:#3b4a5c}
+  .best .bk{font-size:12px;color:#b9c8da}
+  .best .bn{font-size:26px;font-weight:800;line-height:1.2;margin:2px 0}
+  .best .bs{font-size:14px;font-weight:600}
+  .best .bs b{font-size:20px}
+  .best img{width:46%;max-width:180px;height:auto;flex:none;background:#f6f1e7;border-radius:8px;padding:6px}
+  .best .bo{font-size:12.5px;color:#d6e0ec;margin-top:4px}
+  .stopbar{border-radius:var(--r-card)}
+  /* 魚×時間の早見表 */
+  .heat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);margin:0 0 14px;overflow:hidden}
+  .heat h2{font-size:15px;margin:0;padding:12px 14px 4px}
+  .heat .cap{font-size:12px;color:var(--muted);padding:0 14px 8px;margin:0}
+  .hrow2{display:grid;grid-template-columns:30px 82px 1fr 46px;gap:6px;align-items:center;padding:4px 10px 4px 12px;border-top:1px solid var(--rule);cursor:pointer;background:none;border-left:0;border-right:0;border-bottom:0;width:100%;text-align:left;font:inherit;color:inherit;min-height:40px}
+  .hrow2:hover{background:#f7f9fb}
+  .hrow2 img{width:30px;height:20px;object-fit:contain}
+  .hrow2 .n{font-size:13px;font-weight:700;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hcells{display:flex;gap:1px;height:22px}
+  .hcells i{flex:1;border-radius:2px}
+  .hrow2 .g{justify-self:end;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .hrow2 .g.A{color:#1e7d48} .hrow2 .g.B{color:#0a5a96} .hrow2 .g.C{color:#8a5a00} .hrow2 .g.D{color:#6b7684}
+  .hhours{display:grid;grid-template-columns:30px 82px 1fr 46px;gap:6px;padding:4px 10px 6px 12px;font-size:10.5px;color:var(--muted)}
+  .hhours .hl{display:flex;justify-content:space-between}
+  .heat .lg{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);padding:8px 14px 12px;border-top:1px solid var(--rule)}
+  .heat .lg i{width:16px;height:10px;border-radius:2px;display:inline-block}
+  .fishhead{font-size:15px;font-weight:700;margin:4px 2px 8px}
+  details.fish{border-radius:var(--r-card)}
 </style>
 </head>
 <body>
+<div class="topbar"><div class="bar-in">
+  <img class="mark" src="icon-192.png" alt="" width="30" height="30">
+  <h1>釣果予報<small>水温・潮・天気で、今日釣れそうな魚</small></h1>
+  <button class="barbtn" id="refreshBtn" type="button">更新</button>
+</div></div>
 <div class="wrap">
-  <div class="hero">
-    <img class="hero-art" src="hero-tai.webp" alt="" width="320" height="207">
-    <header class="top">
-      <h1>カヤック釣果予報</h1>
-      <button class="refresh" id="refreshBtn">↻ 更新</button>
-    </header>
-    <p class="hero-lead">水温・潮・天気から、<br>今日の釣れそうな魚を。</p>
-    <div class="locbar">
-      <div class="loc" id="locText">現在地を取得しています…</div>
-      <button class="locbtn" id="locBtn">📍 現在地</button>
-    </div>
+  <div class="locbar">
+    <div class="loc" id="locText">現在地を取得しています…</div>
+    <button class="locbtn" id="locBtn" type="button">現在地にする</button>
   </div>
 
   <div class="tabs" id="tabs">
@@ -306,7 +367,7 @@
 
       <h3>使い方（3ステップ）</h3>
       <ol>
-        <li><b>「📍 現在地」を押す</b>。その場所の水温・潮・天気を自動で取得します（位置情報は端末の中だけで使い、どこにも送信しません）。</li>
+        <li><b>「現在地にする」を押す</b>。その場所の水温・潮・天気を自動で取得します（位置情報は端末の中だけで使い、どこにも送信しません）。</li>
         <li><b>日付を選ぶ</b>。今日・明日・明後日の3日分が見られます。</li>
         <li><b>魚種のカードを見る</b>。◎○△×で「釣れそう度」が出ます。カードの中の横並びの表は、1時間ごとのスコアです。</li>
       </ol>
@@ -365,7 +426,7 @@
   <p class="credit">
     気象・海象データ：Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>）<br>
     潮汐データ：<a href="https://tide736.net/" target="_blank" rel="noopener">tide736.net</a>（気象庁 潮位表をもとに算出）<br>
-    <span style="opacity:.7">版 2026-10-26 v27（タックル計画：結果をURLで共有・使いやすさの点検）</span>
+    <span style="opacity:.7">版 2026-10-27 v28（画面を一新：今日いちばんの魚・魚×時間の早見表）</span>
   </p>
 </div>
 
@@ -901,7 +962,7 @@ function renderEnv(env){
   const sun = `${dec2hm(env.sunrise)}<small> / </small>${dec2hm(env.sunset)}`;
   const safeLabel={GO:'出られそう',CAUTION:'要確認',STOP:'出艇はやめて'};
   return `<div class="env">
-    <h2>🌊 ${mdjp(env.dateStr)}（${weekdayOf(env.dateStr)}）の海況${FETCHED_AT?`<small class="stamp">${FETCHED_AT}時点</small>`:''}</h2>
+    <h2>${mdjp(env.dateStr)}（${weekdayOf(env.dateStr)}）の海況${FETCHED_AT?`<small class="stamp">${FETCHED_AT}時点</small>`:''}</h2>
     <div class="env-grid">
       <div class="env-cell sst"><span class="k">水温（日中平均）</span><span class="v">${sst}</span>${sstSub}</div>
       <div class="env-cell"><span class="k">天気</span><span class="v">${wxTxt}</span></div>
@@ -942,7 +1003,7 @@ function renderFish(r, isToday, nowHour, isOpen, isRef){
   const g=grade(r.score);
   const pct=Math.round(clamp(r.score,0,1)*100);
   const peakTxt = r.peak ? `ピーク ${r.peak.h}時ごろ` : '';
-  return `<details class="fish"${isOpen?' open':''}>
+  return `<details class="fish" id="f-${r.sp.id}"${isOpen?' open':''}>
     <summary>
     <div class="fish-head">
       <div class="grade ${g.k}"><span class="mk">${g.mk}</span></div>
@@ -983,6 +1044,44 @@ function renderTop3(results, scope, isRef){
   const cap = isRef ? `もし出られたら：${scopeLbl}の狙い目トップ3` : `🎯 ${scopeLbl}の狙い目トップ3`;
   return `<div class="top3${isRef?' ref':''}"><div class="top3-cap">${cap}</div><div class="top3-row">${chips}</div></div>`;
 }
+
+// 今日いちばんの魚（色の面）
+function renderBest(r, isRef){
+  const g=grade(r.score), pct=Math.round(r.score*100);
+  const nm=r.sp.name.replace(/（.*/,'');
+  return `<div class="best${isRef?' ref':''}">
+    <div style="flex:1;min-width:0">
+      <div class="bk">${isRef?'もし出られたら、いちばん':'今日いちばん釣れそう'}</div>
+      <div class="bn">${escapeHtml(nm)}</div>
+      <div class="bs num">${g.mk} ${g.label}・<b>${pct}</b>点</div>
+      <div class="bo">${r.peak?`ピークは${r.peak.h}時ごろ`:''}</div>
+    </div>
+    <img src="gyotaku/${r.sp.id}.webp" alt="${escapeHtml(nm)}の魚拓（イラスト）">
+  </div>`;
+}
+// 魚×時間の早見表（この道具だけの部品）
+function heatColor(p){ return p>=92?'#0b2747':p>=84?'#1f4a78':p>=75?'#3d6c9c':p>=58?'#7fa2c6':p>=42?'#bfd0e2':'#edf1f5'; }
+function renderHeat(results, h0, h1, scopeLbl){
+  const hrs=[]; for(let h=h0; h<=h1; h++) hrs.push(h);
+  const rows=results.map(r=>{
+    const g=grade(r.score), pct=Math.round(r.score*100);
+    const cells=hrs.map(h=>{ const c=r.hourly[h]; const p=Math.round(c.score*100); return `<i style="background:${heatColor(p)}" title="${h}時 ${p}点"></i>`; }).join('');
+    return `<button type="button" class="hrow2" data-f="${r.sp.id}" aria-label="${escapeHtml(r.sp.name)} ${pct}点。押すと説明が開きます">
+      <img src="gyotaku/${r.sp.id}.webp" alt="" loading="lazy">
+      <span class="n">${escapeHtml(r.sp.name.replace(/（.*/,''))}</span>
+      <span class="hcells">${cells}</span>
+      <span class="g ${g.k}">${g.mk}${pct}</span>
+    </button>`;
+  }).join('');
+  const mid=hrs[Math.floor(hrs.length/2)];
+  return `<div class="heat">
+    <h2>魚ごとの釣れそう度（${scopeLbl}）</h2>
+    <p class="cap">色が濃いほど釣れそうな時間。魚の名前を押すと、くわしい説明が開きます。</p>
+    <div class="hhours"><span></span><span></span><span class="hl num"><span>${h0}時</span><span>${mid}時</span><span>${h1}時</span></span><span></span></div>
+    ${rows}
+    <div class="lg"><span>うすい</span><i style="background:#edf1f5"></i><i style="background:#bfd0e2"></i><i style="background:#7fa2c6"></i><i style="background:#3d6c9c"></i><i style="background:#1f4a78"></i><i style="background:#0b2747"></i><span>こい＝釣れそう</span></div>
+  </div>`;
+}
 function renderDay(off){
   if(!DATA) return;
   TRIPS = readTrips();
@@ -999,12 +1098,17 @@ function renderDay(off){
   // 時間別の帯は、選んだ見せ方の最初の時刻から見せる
   const startHour = scope==='my' ? MY_FROM : scope==='now' ? (nowHour??0) : scope==='all' ? 0 : Math.floor(env.sunrise);
   results.forEach(r=>{ r.startHour=startHour; });
-  const html = renderEnv(env) + stopNote + renderTop3(results, scope, isRef) + banner
-    + `<p class="hours-cap">上位3つを開いています。ほかの魚は、名前をタップすると詳しく見られます。</p>`
-    + `<div class="fishlist">` + results.map((r,i)=>renderFish(r,isToday,nowHour,i<3,isRef)).join('') + `</div>`
-    + renderTide(env)
-    + `<div class="sharebar"><button type="button" id="shareBtn">📋 この日の狙い目をコピー（LINE等で共有）</button></div>`;
+  const scopeLbl = scope==='my' ? `${MY_FROM}〜${MY_TO}時` : ({now:'今から',day:'日中',all:'終日'}[scope]||'');
+  const h0 = scope==='my'?MY_FROM : scope==='now'?(nowHour??0) : scope==='all'?0 : Math.floor(env.sunrise);
+  const h1 = scope==='my'?MY_TO : scope==='now'||scope==='all'?23 : Math.min(23,Math.ceil(env.sunset));
+  const html = stopNote + renderBest(results[0], isRef) + renderEnv(env)
+    + renderHeat(results, h0, Math.max(h0,h1), scopeLbl)
+    + `<p class="fishhead">魚ごとの説明</p>`
+    + `<div class="fishlist">` + results.map((r,i)=>renderFish(r,isToday,nowHour,false,isRef)).join('') + `</div>`
+    + banner + renderTide(env)
+    + `<div class="sharebar"><button type="button" id="shareBtn">この日の狙い目をコピー（LINEなどで送れます）</button></div>`;
   document.getElementById('content').innerHTML=html;
+  document.querySelectorAll('.hrow2').forEach(b=>b.addEventListener('click',()=>{ const d=document.getElementById('f-'+b.dataset.f); if(!d) return; d.open=true; alignHours(d.parentElement); d.scrollIntoView({behavior:'smooth',block:'start'}); }));
   alignHours(document.getElementById('content'));
   LAST={env,results,scope};
 }
@@ -1073,7 +1177,7 @@ async function load(lat,lon,locLabel){
   STATION=nearestStation(lat,lon);
   const distTxt=STATION.dist>60?`<span class="locwarn">約${Math.round(STATION.dist)}km・遠い</span>`:`約${Math.round(STATION.dist)}km`;
   document.getElementById('locText').innerHTML=
-    `📍 <b>${locLabel}</b>（${lat.toFixed(3)}, ${lon.toFixed(3)}）<br>潮汐観測点：<b>${escapeHtml(STATION.name)}</b>（${distTxt}）`;
+    `<b>${locLabel}</b>（${lat.toFixed(3)}, ${lon.toFixed(3)}）<br>潮汐観測点：<b>${escapeHtml(STATION.name)}</b>（${distTxt}）`;
   try{
     const wxp=fetchWeather(lat,lon); const tdp=fetchTide(STATION);
     const wx=await wxp; const tide=await tdp;
