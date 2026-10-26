@@ -16,6 +16,8 @@
 .chip small{color:var(--muted);font-weight:600;margin-left:4px}
 .chip[aria-pressed="true"]{background:var(--kon);border-color:var(--kon);color:#fff}
 .chip[aria-pressed="true"] small{color:#bcd3ea}
+.chip.main[aria-pressed="true"]{background:var(--shu);border-color:var(--shu)}
+.badge{display:inline-block;background:var(--shu);color:#fff;border-radius:999px;font-size:11px;font-weight:800;padding:1px 8px;margin-left:6px;vertical-align:2px}
 .chip:focus-visible,.num:focus-visible{outline:3px solid #8fc6ee;outline-offset:2px}
 .nums{display:flex;gap:8px}
 .num{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:12px 0;font-size:18px;font-weight:800;color:var(--kon);cursor:pointer}
@@ -53,6 +55,11 @@
     <h3>🏖️ 岸から</h3><div class="chips" id="shore"></div>
     <h3>🛶 カヤック・船から</h3><div class="chips" id="boat"></div>
   </section>
+  <section id="mainsec" hidden>
+    <h2>メインにしたい釣り（任意）</h2>
+    <p class="cap" style="margin-top:0">選ぶと、竿の目安をその釣りに寄せます。複数選べます。</p>
+    <div class="chips" id="mains"></div>
+  </section>
   <section>
     <h2>2. 用意できる竿とリールのセット数</h2>
     <div class="nums" id="nums"></div>
@@ -64,7 +71,7 @@
   </section>
   <section class="src">
     <h2>判定のしくみと出典</h2>
-    <p class="cap">釣りごとに「竿の長さ」「ルアー・オモリの重さ」「リールの種類と大きさ」「糸の種類と太さ」の目安を持たせ、1本の竿でまとめたときにどれだけ外れるかで◎〜✕を出しています。竿1本で扱えるルアーの重さは、だいたい一番軽いものの4倍くらいまでとして計算しています。選んだ釣りをセットに振り分ける全部の組み合わせを試して、無理が一番少ないものを出しています。</p>
+    <p class="cap">メインに選んだ釣りは、判定で6倍の重みを付けています（ほかの釣りより、メインの◎を優先）。釣りごとに「竿の長さ」「ルアー・オモリの重さ」「リールの種類と大きさ」「糸の種類と太さ」の目安を持たせ、1本の竿でまとめたときにどれだけ外れるかで◎〜✕を出しています。竿1本で扱えるルアーの重さは、だいたい一番軽いものの4倍くらいまでとして計算しています。選んだ釣りをセットに振り分ける全部の組み合わせを試して、無理が一番少ないものを出しています。</p>
     <ul>
       <li><a href="https://www.daiwa.com/jp/beginner/place/">ダイワ「初心者のための釣り入門」</a>（エギング・サビキ・アジング/メバリング・穴釣り・投げ釣り・シーバス・サーフ・ウキ釣り・カワハギ）</li>
       <li>ティップラン：<a href="https://corp.tacklenote.jp/columns/?p=108082">タックルノート</a>・<a href="https://tsurihack.com/6099">TSURI HACK</a></li>
@@ -98,18 +105,28 @@ const T = [
 ];
 const SIZES=[1000,2000,2500,3000,4000,5000,6000];
 const PE=[0.2,0.3,0.4,0.6,0.8,1,1.2,1.5,2,3];
-const sel=new Set(); let N=1;
+const sel=new Set(), mains=new Set(); let N=1;
+const W=t=>mains.has(t.id)?6:1;   // メインは6倍の重みで判定
 const $=s=>document.querySelector(s);
 const ft2m=f=>(f*0.3048).toFixed(1);
 function chips(){
   for(const t of T){
     const b=document.createElement('button'); b.className='chip'; b.type='button'; b.setAttribute('aria-pressed','false');
     b.innerHTML=`${t.name}<small>${t.how}</small>`;
-    b.onclick=()=>{ if(sel.has(t.id)) sel.delete(t.id); else { if(sel.size>=8) return; sel.add(t.id);} b.setAttribute('aria-pressed',sel.has(t.id)); run(); };
+    b.onclick=()=>{ if(sel.has(t.id)){ sel.delete(t.id); mains.delete(t.id);} else { if(sel.size>=8) return; sel.add(t.id);} b.setAttribute('aria-pressed',sel.has(t.id)); drawMains(); run(); };
     $(t.boat?'#boat':'#shore').appendChild(b);
   }
   for(let n=1;n<=4;n++){ const b=document.createElement('button'); b.className='num'; b.type='button'; b.textContent=n+'セット'; b.setAttribute('aria-pressed',n===N);
     b.onclick=()=>{N=n; document.querySelectorAll('.num').forEach((x,i)=>x.setAttribute('aria-pressed',i+1===N)); run();}; $('#nums').appendChild(b); }
+}
+function drawMains(){
+  const box=$('#mains'); box.innerHTML=''; $('#mainsec').hidden=sel.size<2;
+  for(const t of T.filter(t=>sel.has(t.id))){
+    const b=document.createElement('button'); b.className='chip main'; b.type='button'; b.setAttribute('aria-pressed',mains.has(t.id));
+    b.innerHTML=`★ ${t.name}<small>${t.how}</small>`;
+    b.onclick=()=>{ mains.has(t.id)?mains.delete(t.id):mains.add(t.id); b.setAttribute('aria-pressed',mains.has(t.id)); run(); };
+    box.appendChild(b);
+  }
 }
 // --- 1本の竿でまとめたときの各要素の「外れ方」 0〜3
 function lenPen(L,t){ const d=L<t.len[0]?t.len[0]-L:L>t.len[1]?L-t.len[1]:0; return d===0?0:d<=1.5?1:d<=4?2:3; }
@@ -124,13 +141,13 @@ function linePen(kind,pe,t){ if(t.line[0]==='any') return 0;
   const d=pe<t.line[1]?t.line[1]/pe:pe>t.line[2]?pe/t.line[2]:1; return d<=1?0:d<=1.6?1:2; }
 function bestFor(ts){
   let best=null;
-  for(let L=5;L<=17.5;L+=0.5){ const s=ts.reduce((a,t)=>a+lenPen(L,t)**2,0); if(!best||s<best.s) best={s,L}; }
-  const gm=ts.reduce((a,t)=>a+Math.log(Math.sqrt(t.w[0]*t.w[1])),0)/ts.length;   // 重さの真ん中（対数）
-  let bw=null; for(let lo=1;lo<=200;lo*=1.08){ const s=ts.reduce((a,t)=>a+wPen(lo,t)**2,0)+0.05*Math.abs(Math.log(lo*2)-gm); if(!bw||s<bw.s-1e-9) bw={s,lo}; }
-  let bz=null; for(const z of SIZES){ const s=ts.reduce((a,t)=>a+spinPen(z,t)**2,0); if(!bz||s<bz.s) bz={s,z}; }
-  const ny=ts.filter(t=>t.line[0]==='nylon').length, pe=ts.filter(t=>t.line[0]==='pe').length;
+  for(let L=5;L<=17.5;L+=0.5){ const s=ts.reduce((a,t)=>a+W(t)*lenPen(L,t)**2,0); if(!best||s<best.s) best={s,L}; }
+  const gm=ts.reduce((a,t)=>a+W(t)*Math.log(Math.sqrt(t.w[0]*t.w[1])),0)/ts.reduce((a,t)=>a+W(t),0);   // 重さの真ん中（対数）
+  let bw=null; for(let lo=1;lo<=200;lo*=1.08){ const s=ts.reduce((a,t)=>a+W(t)*wPen(lo,t)**2,0)+0.05*Math.abs(Math.log(lo*2)-gm); if(!bw||s<bw.s-1e-9) bw={s,lo}; }
+  let bz=null; for(const z of SIZES){ const s=ts.reduce((a,t)=>a+W(t)*spinPen(z,t)**2,0); if(!bz||s<bz.s) bz={s,z}; }
+  const ny=ts.filter(t=>t.line[0]==='nylon').reduce((a,t)=>a+W(t),0), pe=ts.filter(t=>t.line[0]==='pe').reduce((a,t)=>a+W(t),0);
   const kind= ny>pe?'nylon':'pe';
-  let bp=null; for(const p of PE){ const s=ts.reduce((a,t)=>a+linePen(kind,p,t)**2,0); if(!bp||s<bp.s) bp={s,p}; }
+  let bp=null; for(const p of PE){ const s=ts.reduce((a,t)=>a+W(t)*linePen(kind,p,t)**2,0); if(!bp||s<bp.s) bp={s,p}; }
   const L=best.L, lo=bw.lo, z=bz.z, p=bp.p;
   const anyCast=ts.some(t=>t.cast);
   const allBait=ts.every(t=>t.bait);
@@ -145,7 +162,7 @@ function bestFor(ts){
     const lnp=linePen(kind,p,t); if(lnp){ g=Math.max(g,lnp); why.push(kind!==t.line[0]?`糸の種類が違う（この釣りは${t.line[0]==='pe'?'PE':'ナイロン'}）→ 替えスプールがあると楽`:`糸の太さが合わない（目安PE${t.line[1]}〜${t.line[2]}号）`); }
     return {t,g,why};
   });
-  const cost=res.reduce((a,r)=>a+r.g*r.g*10+r.why.length,0);
+  const cost=res.reduce((a,r)=>a+W(r.t)*(r.g*r.g*10+r.why.length),0);
   return {L,lo,z,p,kind,res,cost,anyCast,allBait};
 }
 const memo=new Map();
@@ -157,6 +174,7 @@ function partitions(n,k){ // n個を最大k個のグループへ
 }
 function run(){
   const list=T.filter(t=>sel.has(t.id)); const out=$('#out'); memo.clear();
+  const mainNote = mains.size ? `メイン（${T.filter(t=>mains.has(t.id)).map(t=>t.how).join('・')}）に合わせて、竿の目安を寄せています。` : '';
   if(!list.length){ out.innerHTML='<p class="empty">上で、やりたい釣りを選んでください。</p>'; return; }
   let best=null;
   for(const pa of partitions(list.length,N)){
@@ -164,21 +182,22 @@ function run(){
     const bs=Object.values(masks).map(m=>block(m,list)); const c=bs.reduce((a,b)=>a+b.cost,0)+bs.length*0.01;
     if(!best||c<best.c) best={c,bs};
   }
-  const sets=best.bs.sort((a,b)=>b.res.length-a.res.length);
+  const hasMain=s=>s.res.some(r=>mains.has(r.t.id));
+  const sets=best.bs.sort((a,b)=>(hasMain(b)-hasMain(a))||(b.res.length-a.res.length));
   const used=sets.length;
-  let html=`<p class="summary">${list.length}つの釣りを、<b>${used}セット</b>でまかなう組み合わせです。${used<N?`（${N}セット用意しなくても、${used}セットで足ります）`:''}</p>`;
+  let html=`<p class="summary">${list.length}つの釣りを、<b>${used}セット</b>でまかなう組み合わせです。${used<N?`（${N}セット用意しなくても、${used}セットで足ります）`:''}${mainNote?'<br>'+mainNote:''}</p>`;
   sets.forEach((s,i)=>{
-    const fit=s.res.find(r=>s.L>=r.t.len[0]&&s.L<=r.t.len[1]);
+    const fits=s.res.filter(r=>s.L>=r.t.len[0]&&s.L<=r.t.len[1]); const fit=fits.find(r=>mains.has(r.t.id))||fits[0];
     const rodName= fit ? fit.t.rod : s.L>=12 ? '磯竿・投げ竿' : s.L>=9.5 ? '長めのシーバスロッド・サーフ用ロッド' : s.L>=7 ? 'エギングロッド・シーバスロッド' : s.res.every(r=>r.t.boat) ? '船・カヤック用のロッド' : 'ライトゲーム用ロッド';
     const reel= s.allBait ? 'ベイト（両軸）リール 150〜300番クラス' : `スピニング ${s.z}番前後`;
     const line= s.kind==='pe' ? `PE ${s.p}号前後` : 'ナイロン 2〜3号';
     const mixed= s.res.some(r=>r.t.line[0]!=='any' && r.t.line[0]!==s.kind);
-    html+=`<div class="set"><div class="set-h"><b>セット${i+1}</b><span>${s.res.length}つの釣り</span></div>
+    html+=`<div class="set"><div class="set-h"><b>セット${i+1}${hasMain(s)?'<span class="badge">メイン用</span>':''}</b><span>${s.res.length}つの釣り</span></div>
     <dl class="spec"><dt>竿</dt><dd>長さ ${s.L}フィート（約${ft2m(s.L)}m）・ルアーやオモリ ${Math.round(s.lo)}〜${Math.round(s.lo*4)}g<small>近い竿：${rodName}</small></dd>
     <dt>リール</dt><dd>${reel}</dd><dt>糸</dt><dd>${line}${mixed?`<small>＋替えスプールに${s.kind==='pe'?'ナイロン2〜3号':'PE'}</small>`:''}</dd></dl><div class="tg">`;
-    s.res.sort((a,b)=>a.g-b.g).forEach(r=>{
+    s.res.sort((a,b)=>(mains.has(b.t.id)-mains.has(a.t.id))||(a.g-b.g)).forEach(r=>{
       const mk=['◎','○','△','✕'][r.g];
-      html+=`<div class="tgt"><div class="g g${r.g}">${mk}</div><div><b>${r.t.name}</b>（${r.t.how}）${r.t.page?` <a href="../zukan/shikake/${r.t.page}.html">仕掛け</a>`:''}<p>${r.why.length?r.why.join('。<br>')+'。':'この竿でちょうどいい。'}</p></div></div>`;
+      html+=`<div class="tgt"><div class="g g${r.g}">${mk}</div><div><b>${r.t.name}</b>（${r.t.how}）${mains.has(r.t.id)?'<span class="badge">メイン</span>':''}${r.t.page?` <a href="../zukan/shikake/${r.t.page}.html">仕掛け</a>`:''}<p>${r.why.length?r.why.join('。<br>')+'。':'この竿でちょうどいい。'}</p></div></div>`;
     });
     html+='</div></div>';
   });
