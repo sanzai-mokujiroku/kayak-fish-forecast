@@ -12,6 +12,8 @@
 <link rel="stylesheet" href="../zukan/zukan.css">
 <style>
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.chip,.num{touch-action:manipulation}
+.chip:hover,.num:hover{border-color:#9fb6cf}
 .chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:13.5px;font-weight:700;color:var(--ink);cursor:pointer}
 .chip small{color:var(--muted);font-weight:600;margin-left:4px}
 .chip[aria-pressed="true"]{background:var(--kon);border-color:var(--kon);color:#fff}
@@ -67,7 +69,8 @@
   <section style="background:transparent;border:0;padding:0">
     <h2 style="padding:0 2px">3. おすすめの組み合わせ</h2>
     <div class="legend"><span><i class="g0"></i>◎ ちょうどいい</span><span><i class="g1"></i>○ 使える</span><span><i class="g2"></i>△ 無理がある</span><span><i class="g3"></i>✕ 実質できない</span></div>
-    <div id="out"><p class="empty">上で、やりたい釣りを選んでください。</p></div>
+    <p class="cap" id="limit" aria-live="polite" style="margin:0 0 6px"></p>
+    <div id="out" aria-live="polite"><p class="empty">上で、やりたい釣りを選んでください。</p></div>
   </section>
   <section class="src">
     <h2>判定のしくみと出典</h2>
@@ -113,7 +116,8 @@ function chips(){
   for(const t of T){
     const b=document.createElement('button'); b.className='chip'; b.type='button'; b.setAttribute('aria-pressed','false');
     b.innerHTML=`${t.name}<small>${t.how}</small>`;
-    b.onclick=()=>{ if(sel.has(t.id)){ sel.delete(t.id); mains.delete(t.id);} else { if(sel.size>=8) return; sel.add(t.id);} b.setAttribute('aria-pressed',sel.has(t.id)); drawMains(); run(); };
+    b.dataset.id=t.id;
+    b.onclick=()=>{ $('#limit').textContent=''; if(sel.has(t.id)){ sel.delete(t.id); mains.delete(t.id);} else { if(sel.size>=8){ $('#limit').textContent='選べるのは8つまでです。どれかを外してから選んでください。'; return; } sel.add(t.id);} b.setAttribute('aria-pressed',sel.has(t.id)); drawMains(); run(); };
     $(t.boat?'#boat':'#shore').appendChild(b);
   }
   for(let n=1;n<=4;n++){ const b=document.createElement('button'); b.className='num'; b.type='button'; b.textContent=n+'セット'; b.setAttribute('aria-pressed',n===N);
@@ -181,7 +185,21 @@ function partitions(n,k){ // n個を最大k個のグループへ
   (function rec(i,m){ if(i===n){ out.push(a.slice()); return; } for(let g=0;g<=Math.min(m,k-1);g++){ a[i]=g; rec(i+1,Math.max(m,g+1)); } })(0,0);
   return out;
 }
+function saveURL(){
+  const q=new URLSearchParams(); if(sel.size) q.set('t',[...sel].join(',')); if(mains.size) q.set('m',[...mains].join(',')); if(N!==1) q.set('n',N);
+  history.replaceState(null,'',q.toString()?'?'+q:location.pathname);
+}
+function loadURL(){
+  const q=new URLSearchParams(location.search);
+  (q.get('t')||'').split(',').filter(id=>T.some(t=>t.id===id)).slice(0,8).forEach(id=>sel.add(id));
+  (q.get('m')||'').split(',').filter(id=>sel.has(id)).forEach(id=>mains.add(id));
+  const n=+q.get('n'); if(n>=1&&n<=4) N=n;
+  document.querySelectorAll('.chip[data-id]').forEach(b=>b.setAttribute('aria-pressed',sel.has(b.dataset.id)));
+  document.querySelectorAll('.num').forEach((x,i)=>x.setAttribute('aria-pressed',i+1===N));
+  drawMains();
+}
 function run(){
+  saveURL();
   const list=T.filter(t=>sel.has(t.id)); const out=$('#out'); memo.clear();
   const mainNote = mains.size ? `1セット目は、メイン（${T.filter(t=>mains.has(t.id)).map(t=>t.how).join('・')}）にぴったりの竿にしています。ほかの釣りは、その竿で無理が少ないものだけ一緒にしています。` : '';
   if(!list.length){ out.innerHTML='<p class="empty">上で、やりたい釣りを選んでください。</p>'; return; }
@@ -214,9 +232,10 @@ function run(){
     });
     html+='</div></div>';
   });
+  html+='<p class="cap">この組み合わせは、いまのページのアドレス（URL）をコピーすれば、そのまま人に送ったり保存したりできます。</p>';
   out.innerHTML=html;
 }
-chips(); run();
+chips(); loadURL(); run();
 </script>
 </body>
 </html>
